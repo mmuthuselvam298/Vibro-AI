@@ -18,9 +18,10 @@ STATUS: OPERATIONAL  │  UI: NEOBRUTALISM  │  INFERENCE: ~21MS  │  TARGET: 
 
 <br />
 
+[![Live Vercel Production](https://img.shields.io/badge/▶_LAUNCH_LIVE_ON_VERCEL-FFD500?style=for-the-badge&logo=vercel&logoColor=000&labelColor=FFD500)](https://vibro-ai-main.vercel.app)
 [![GitHub Repo](https://img.shields.io/badge/GITHUB-Vibro--AI-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mmuthuselvam298/Vibro-AI)
-[![Problem Statement](https://img.shields.io/badge/SIH26054-MULTI--PARAMETER_PROGNOSTICS-FFD500?style=for-the-badge&labelColor=000&logoColor=FFD500)](#)
-[![Status](https://img.shields.io/badge/SYSTEM-MISSION_READY-34C759?style=for-the-badge&logoColor=white&labelColor=000)](#)
+[![Problem Statement](https://img.shields.io/badge/SIH26054-MULTI--PARAMETER_PROGNOSTICS-FFD500?style=for-the-badge&labelColor=000&logoColor=FFD500)](https://vibro-ai-main.vercel.app)
+[![Status](https://img.shields.io/badge/SYSTEM-MISSION_READY-34C759?style=for-the-badge&logoColor=white&labelColor=000)](https://vibro-ai-main.vercel.app)
 [![Model](https://img.shields.io/badge/AI-CNN--LSTM_+_PHYSICS_RESIDUALS-0A2540?style=for-the-badge&logoColor=white&labelColor=0A2540)](#)
 
 <br />
