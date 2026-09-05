@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSignalStore } from '@/store/signalStore';
 import { useEngineStore } from '@/store/engineStore';
+import { GuideLink } from './GuideLink';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 export const LiveVibration: React.FC = () => {
@@ -22,6 +23,7 @@ export const LiveVibration: React.FC = () => {
           <div className="border-2 border-black px-2.5 py-1 font-extrabold bg-white shadow-[2px_2px_0px_0px_#000]">
             PK: {features.peakAmplitude.toFixed(3)}g
           </div>
+          <GuideLink sectionId="06-signal-processing" label="DSP" />
         </div>
       </div>
 

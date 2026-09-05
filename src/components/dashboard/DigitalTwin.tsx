@@ -1,5 +1,6 @@
 import React from 'react';
 import { useEngineStore, type ComponentType } from '@/store/engineStore';
+import { GuideLink } from './GuideLink';
 import { Eye } from 'lucide-react';
 
 export const DigitalTwin: React.FC = () => {
@@ -21,8 +22,11 @@ export const DigitalTwin: React.FC = () => {
     <div className="neo-card flex flex-col h-[420px] bg-white">
       <div className="flex flex-wrap justify-between items-center mb-3 border-b-4 border-black pb-2 gap-2">
         <h3 className="font-extrabold text-xl uppercase tracking-tight">Digital Twin</h3>
-        <div className="border-2 border-black px-2.5 py-1 font-mono font-extrabold text-xs bg-white shadow-[2px_2px_0px_0px_#000]">
-          VIEW: FRONT SECTION
+        <div className="flex items-center gap-2">
+          <div className="border-2 border-black px-2.5 py-1 font-mono font-extrabold text-xs bg-white shadow-[2px_2px_0px_0px_#000]">
+            VIEW: FRONT SECTION
+          </div>
+          <GuideLink sectionId="11-digital-twin" label="Twin Guide" />
         </div>
       </div>
 

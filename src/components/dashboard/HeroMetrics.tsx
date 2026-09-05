@@ -1,5 +1,6 @@
 import React from 'react';
 import { useEngineStore } from '@/store/engineStore';
+import { GuideLink } from './GuideLink';
 import { cn } from '@/lib/utils';
 import { Activity, AlertTriangle, ShieldAlert, Cpu } from 'lucide-react';
 
@@ -32,7 +33,10 @@ export const HeroMetrics: React.FC = () => {
       )}>
         <div className="flex justify-between items-start">
           <span className="font-extrabold uppercase tracking-wider text-xs">Engine Health</span>
-          <Activity size={28} className="stroke-[2.5]" />
+          <div className="flex items-center gap-1.5">
+            <GuideLink sectionId="09-severity-estimation" label="?" />
+            <Activity size={26} className="stroke-[2.5]" />
+          </div>
         </div>
         <div>
           <div className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tighter">
@@ -48,10 +52,13 @@ export const HeroMetrics: React.FC = () => {
       <div className="neo-card flex flex-col justify-between h-44 p-5 bg-white">
         <div className="flex justify-between items-start">
           <span className="font-extrabold uppercase tracking-wider text-xs text-gray-600">Active Fault</span>
-          <AlertTriangle
-            size={28}
-            className={cn("stroke-[2.5]", displayFault !== 'NONE' ? 'text-black' : 'text-gray-300')}
-          />
+          <div className="flex items-center gap-1.5">
+            <GuideLink sectionId="08-fault-signatures" label="?" />
+            <AlertTriangle
+              size={26}
+              className={cn("stroke-[2.5]", displayFault !== 'NONE' ? 'text-black' : 'text-gray-300')}
+            />
+          </div>
         </div>
         <div>
           <div className="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight uppercase line-clamp-1 leading-none mb-1">
@@ -76,7 +83,10 @@ export const HeroMetrics: React.FC = () => {
       <div className="neo-card flex flex-col justify-between h-44 p-5 bg-white">
         <div className="flex justify-between items-start">
           <span className="font-extrabold uppercase tracking-wider text-xs text-gray-600">AI Confidence</span>
-          <Cpu size={28} className="stroke-[2.5]" />
+          <div className="flex items-center gap-1.5">
+            <GuideLink sectionId="07-ai-fault-diagnosis" label="?" />
+            <Cpu size={26} className="stroke-[2.5]" />
+          </div>
         </div>
         <div>
           <div className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tighter">
@@ -95,7 +105,10 @@ export const HeroMetrics: React.FC = () => {
       <div className="neo-card flex flex-col justify-between h-44 p-5 bg-[var(--color-brand-blue)] text-white">
         <div className="flex justify-between items-start">
           <span className="font-extrabold uppercase tracking-wider text-xs text-gray-300">Est. RUL</span>
-          <ShieldAlert size={28} className="stroke-[2.5]" />
+          <div className="flex items-center gap-1.5">
+            <GuideLink sectionId="10-rul" label="?" />
+            <ShieldAlert size={26} className="stroke-[2.5]" />
+          </div>
         </div>
         <div>
           <div className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tighter flex items-baseline gap-2">
