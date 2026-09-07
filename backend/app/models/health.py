@@ -19,8 +19,8 @@ class HealthRecord(SQLModel, table=True):
     operating_cycle: int = Field(default=0, ge=0, description="Relative or absolute cycle checkpoint")
     health_score: float = Field(ge=0.0, le=100.0, description="Composite engine health score (0.0 to 100.0)")
     degradation_rate_per_100c: float = Field(default=0.0, description="Health loss rate percentage per 100 cycles")
-    upper_bound: Optional[float] = Field(default=None, description="Upper confidence interval bound")
-    lower_bound: Optional[float] = Field(default=None, description="Lower confidence interval bound")
+    upper_bound: Optional[float] = Field(default=None, description="Upper prototype uncertainty bound")
+    lower_bound: Optional[float] = Field(default=None, description="Lower prototype uncertainty bound")
     is_simulated: bool = Field(default=True, description="True if generated from simulation model")
 
     # Relationships

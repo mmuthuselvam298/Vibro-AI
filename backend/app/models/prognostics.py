@@ -19,10 +19,10 @@ class PrognosticSnapshot(SQLModel, table=True):
     )
 
     # RUL Estimates (Cycles)
-    rul_nominal_cycles: int = Field(description="Nominal remaining useful life in flight cycles")
-    rul_min_cycles: int = Field(description="Lower bound 90% confidence RUL")
-    rul_max_cycles: int = Field(description="Upper bound 90% confidence RUL")
-    confidence_percent: float = Field(default=0.0, description="Statistical estimation confidence")
+    rul_nominal_cycles: int = Field(description="Nominal remaining useful life in flight cycles (prototype estimate)")
+    rul_min_cycles: int = Field(description="Lower prototype uncertainty bound for estimated RUL in flight cycles")
+    rul_max_cycles: int = Field(description="Upper prototype uncertainty bound for estimated RUL in flight cycles")
+    confidence_percent: float = Field(default=0.0, description="Prototype confidence and quality indicator score percentage (0.0 to 100.0)")
 
     # Mission Reliability & Decision Support
     mission_reliability_score: float = Field(default=100.0, description="Mission Reliability percentage (0.0 to 100.0)")
@@ -30,8 +30,8 @@ class PrognosticSnapshot(SQLModel, table=True):
         default="MISSION_CAPABLE",
         description="MISSION_CAPABLE, ENHANCED_MONITORING, MISSION_AT_RISK, CRITICAL_ABORT"
     )
-    safe_operation_minutes: int = Field(default=0, description="Estimated safe operating flight minutes remaining")
-    margin_ratio: float = Field(default=1.0, description="Safe flight horizon vs remaining mission time needed")
+    safe_operation_minutes: int = Field(default=0, description="Prototype projected operating duration remaining in minutes")
+    margin_ratio: float = Field(default=1.0, description="Ratio of projected safe duration to remaining mission duration based on configured prototype criteria")
     recommended_action: str = Field(
         default="CONTINUE_MISSION",
         description="CONTINUE_MISSION, CONTINUE_WITH_ENHANCED_MONITORING, REDUCE_ENGINE_LOAD_15, RETURN_TO_BASE, ABORT_IMMEDIATE_SAFETY"
