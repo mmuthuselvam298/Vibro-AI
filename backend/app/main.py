@@ -1,24 +1,43 @@
-from fastapi import FastAPI, HTTPException
-from sqlmodel import Session, select
+import os
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from .database import create_db_and_tables, engine
-from .models.engine import Engine
+from .database import create_db_and_tables
+from .api import engines_router, missions_router, telemetry_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: ensure tables are created and schema compatible
+    create_db_and_tables()
+    yield
+    # Shutdown: clean up resources if needed
 
 
 app = FastAPI(
     title="Vibro-AI Backend",
-    description="Backend API for the UAV Engine Digital Twin",
+    description="Digital Twin Backend API for MALE UAV Piston Engine Health Monitoring",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
+# CORS Configuration for local frontend development
+allowed_origins_env = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/api/health")
 def health_check():
+    """Health check endpoint for monitoring service status."""
     return {
         "status": "healthy",
         "service": "vibro-ai-backend",
@@ -26,31 +45,7 @@ def health_check():
     }
 
 
-@app.post("/api/engines", response_model=Engine)
-def create_engine(engine_data: Engine):
-    with Session(engine) as session:
-        session.add(engine_data)
-        session.commit()
-        session.refresh(engine_data)
-        return engine_data
-
-
-@app.get("/api/engines", response_model=list[Engine])
-def get_engines():
-    with Session(engine) as session:
-        engines = session.exec(select(Engine)).all()
-        return engines
-
-
-@app.get("/api/engines/{engine_id}", response_model=Engine)
-def get_engine(engine_id: int):
-    with Session(engine) as session:
-        engine_data = session.get(Engine, engine_id)
-
-        if not engine_data:
-            raise HTTPException(
-                status_code=404,
-                detail="Engine not found",
-            )
-
-        return engine_data
+# Include modular API routers
+app.include_router(engines_router, prefix="/api")
+app.include_router(missions_router, prefix="/api")
+app.include_router(telemetry_router, prefix="/api")
