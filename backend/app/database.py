@@ -27,12 +27,37 @@ def _ensure_sqlite_column_compatibility():
     try:
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
-        tables = [r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
-        if "engines" in tables:
-            cols = [r[1] for r in cur.execute("PRAGMA table_info(engines)").fetchall()]
-            if "total_operating_cycles" not in cols:
-                cur.execute("ALTER TABLE engines ADD COLUMN total_operating_cycles INTEGER DEFAULT 0")
-                conn.commit()
+        existing_tables = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+        for table_name, table in SQLModel.metadata.tables.items():
+            if table_name in existing_tables:
+                existing_cols = {r[1] for r in cur.execute(f"PRAGMA table_info({table_name})").fetchall()}
+                for col in table.columns:
+                    if col.name not in existing_cols:
+                        col_type = "TEXT"
+                        type_str = str(col.type).upper()
+                        if "INT" in type_str:
+                            col_type = "INTEGER"
+                        elif "FLOAT" in type_str or "REAL" in type_str:
+                            col_type = "FLOAT"
+                        elif "BOOL" in type_str:
+                            col_type = "BOOLEAN"
+                        elif "DATETIME" in type_str:
+                            col_type = "DATETIME"
+
+                        default_clause = ""
+                        if col.default is not None and hasattr(col.default, "arg"):
+                            val = col.default.arg
+                            if isinstance(val, (int, float, bool)):
+                                default_clause = f" DEFAULT {int(val) if isinstance(val, bool) else val}"
+                            elif isinstance(val, str):
+                                default_clause = f" DEFAULT '{val}'"
+                        elif col.nullable:
+                            default_clause = " DEFAULT NULL"
+                        elif col_type == "BOOLEAN":
+                            default_clause = " DEFAULT 1"
+
+                        cur.execute(f"ALTER TABLE {table_name} ADD COLUMN {col.name} {col_type}{default_clause}")
+        conn.commit()
         conn.close()
     except Exception:
         pass
