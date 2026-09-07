@@ -27,6 +27,7 @@ class Engine(SQLModel, table=True):
     status: str = Field(default="NOMINAL", description="Status: NOMINAL, WATCH, ANOMALY, CRITICAL, GROUNDED")
     total_runtime_hours: float = Field(default=0.0, ge=0.0, description="Cumulative engine operating hours")
     total_operating_cycles: int = Field(default=0, ge=0, description="Cumulative flight cycles")
+    is_simulated: bool = Field(default=True, description="True if simulated engine")
 
     installation_date: Optional[datetime] = None
 

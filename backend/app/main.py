@@ -13,6 +13,7 @@ from .api import (
     health_router,
     prognostics_router,
     vibration_router,
+    digital_twin_router,
 )
 
 
@@ -63,3 +64,4 @@ app.include_router(maintenance_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
 app.include_router(prognostics_router, prefix="/api")
 app.include_router(vibration_router, prefix="/api")
+app.include_router(digital_twin_router, prefix="/api")

@@ -19,6 +19,18 @@ from .vibration import (
     VibrationFeatureRead,
     VibrationAnalysisResponse,
 )
+from .digital_twin import (
+    DataFreshnessSummary,
+    SourceFreshnessInfo,
+    SubsystemHealthState,
+    HealthTrajectory,
+    ActiveFaultSummary,
+    PrognosticsContext,
+    MissionContext,
+    ThresholdProfileMetadata,
+    DigitalTwinSnapshotResponse,
+    DigitalTwinStateRead,
+)
 
 __all__ = [
     "MissionCreate",
@@ -42,4 +54,14 @@ __all__ = [
     "VibrationBurstRead",
     "VibrationFeatureRead",
     "VibrationAnalysisResponse",
+    "DataFreshnessSummary",
+    "SourceFreshnessInfo",
+    "SubsystemHealthState",
+    "HealthTrajectory",
+    "ActiveFaultSummary",
+    "PrognosticsContext",
+    "MissionContext",
+    "ThresholdProfileMetadata",
+    "DigitalTwinSnapshotResponse",
+    "DigitalTwinStateRead",
 ]

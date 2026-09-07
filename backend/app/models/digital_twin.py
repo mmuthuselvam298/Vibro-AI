@@ -25,5 +25,18 @@ class DigitalTwinState(SQLModel, table=True):
         default_factory=lambda: datetime.now(timezone.utc)
     )
 
+    operational_status: Optional[str] = Field(
+        default="NOMINAL",
+        description="Prototype operational condition: NOMINAL, MONITORING, ANOMALOUS, DEGRADED, CRITICAL"
+    )
+    state_source: Optional[str] = Field(
+        default="SIMULATED",
+        description="Data provenance: SIMULATED, OBSERVED, MIXED"
+    )
+    evidence_summary: Optional[str] = Field(
+        default=None,
+        description="Compact summary of active evidence and diagnostic indicators"
+    )
+
     # Relationships
     engine: Optional["Engine"] = Relationship(back_populates="digital_twin_states")

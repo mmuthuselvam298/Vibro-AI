@@ -15,6 +15,28 @@ from .vibration_service import (
     compute_wpd_sub_bands,
     evaluate_candidate_indicators,
 )
+from .digital_twin_service import (
+    EngineNotFoundError,
+    compute_digital_twin_state,
+    refresh_and_persist_digital_twin_state,
+    evaluate_data_freshness,
+    compute_health_trajectory,
+    determine_operational_status,
+    generate_explainability_evidence,
+)
+from .digital_twin_config import (
+    PrototypeDigitalTwinConfig,
+    DEFAULT_DIGITAL_TWIN_CONFIG,
+    get_default_config,
+    MechanicalThresholds,
+    ThermalThresholds,
+    LubricationThresholds,
+    CombustionFuelThresholds,
+    ElectricalThresholds,
+    OperatingContextThresholds,
+    FreshnessThresholds,
+    TrajectoryConfig,
+)
 
 __all__ = [
     "telemetry_buffer",
@@ -31,4 +53,22 @@ __all__ = [
     "extract_spectral_and_order_features",
     "compute_wpd_sub_bands",
     "evaluate_candidate_indicators",
+    "EngineNotFoundError",
+    "compute_digital_twin_state",
+    "refresh_and_persist_digital_twin_state",
+    "evaluate_data_freshness",
+    "compute_health_trajectory",
+    "determine_operational_status",
+    "generate_explainability_evidence",
+    "PrototypeDigitalTwinConfig",
+    "DEFAULT_DIGITAL_TWIN_CONFIG",
+    "get_default_config",
+    "MechanicalThresholds",
+    "ThermalThresholds",
+    "LubricationThresholds",
+    "CombustionFuelThresholds",
+    "ElectricalThresholds",
+    "OperatingContextThresholds",
+    "FreshnessThresholds",
+    "TrajectoryConfig",
 ]
