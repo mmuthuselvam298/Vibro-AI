@@ -1,19 +1,31 @@
 import React, { useMemo } from 'react';
 import { useEngineStore } from '@/store/engineStore';
+import { useBackendEngineState } from '@/hooks/useBackendEngineState';
 import { GuideLink } from './GuideLink';
 import { JargonTooltip } from './JargonTooltip';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine, Tooltip } from 'recharts';
 
 export const DegradationChart: React.FC = () => {
-  const { engineHealth, rul, scenario, degradationRate, plainLanguageMode } = useEngineStore();
+  const { engineHealth, rul: simRul, scenario, degradationRate: simDegradationRate, plainLanguageMode } = useEngineStore();
+  const { digitalTwin, prognostics, backendConnected } = useBackendEngineState();
+
+  const isBackendActive = Boolean(backendConnected && (digitalTwin || prognostics));
+
+  const effectiveRul = prognostics?.rul_nominal_cycles ?? digitalTwin?.prognostics?.rul_nominal_cycles ?? simRul;
+  const effectiveDegradationRate = digitalTwin?.health_trajectory?.degradation_rate_per_hour != null
+    ? digitalTwin.health_trajectory.degradation_rate_per_hour
+    : simDegradationRate;
+  const currentHealth = digitalTwin?.overall_health_score ?? engineHealth;
 
   const data = useMemo(() => {
     const pts = [];
 
-    // Past 6 historical checkpoints
+    // Past historical checkpoints
     for (let i = -50; i < 0; i += 10) {
       const t = Math.abs(i) / 50;
-      const h = Math.min(100, Math.max(0, 100 - ((100 - engineHealth) * (1 - t))));
+      const h = isBackendActive && digitalTwin?.health_trajectory?.previous_health != null
+        ? Math.min(100, Math.max(0, currentHealth + ((digitalTwin.health_trajectory.previous_health - currentHealth) * t)))
+        : Math.min(100, Math.max(0, 100 - ((100 - currentHealth) * (1 - t))));
       pts.push({
         cycle: i,
         health: Number(h.toFixed(1)),
@@ -26,22 +38,26 @@ export const DegradationChart: React.FC = () => {
     // Current point (Cycle 0)
     pts.push({
       cycle: 0,
-      health: Number(engineHealth.toFixed(1)),
-      upperBound: Number(Math.min(100, engineHealth + 2).toFixed(1)),
-      lowerBound: Number(Math.max(0, engineHealth - 2).toFixed(1)),
+      health: Number(currentHealth.toFixed(1)),
+      upperBound: Number(Math.min(100, currentHealth + 2).toFixed(1)),
+      lowerBound: Number(Math.max(0, currentHealth - 2).toFixed(1)),
       isFuture: false
     });
 
-    // Future prognostic projection based on degradation rate & scenario
+    // Future prognostic projection based on effective RUL and uncertainty bounds
     const stepCount = 5;
-    for (let step = 1; step <= stepCount; step++) {
-      const cycleOffset = Math.round((rul / stepCount) * step);
-      const fraction = step / stepCount;
-      const projectedHealth = scenario === 'HEALTHY'
-        ? Math.max(10, engineHealth - (fraction * 50))
-        : Math.max(0, engineHealth - (fraction * (engineHealth - 25)));
+    const minCycles = prognostics?.rul_min_cycles ?? digitalTwin?.prognostics?.rul_min_cycles ?? (effectiveRul * 0.75);
+    const maxCycles = prognostics?.rul_max_cycles ?? digitalTwin?.prognostics?.rul_max_cycles ?? (effectiveRul * 1.25);
+    const uncertaintyRatio = (maxCycles - minCycles) / (effectiveRul || 1);
 
-      const uncertaintySpread = fraction * 8;
+    for (let step = 1; step <= stepCount; step++) {
+      const cycleOffset = Math.round((effectiveRul / stepCount) * step);
+      const fraction = step / stepCount;
+      const projectedHealth = scenario === 'HEALTHY' && !isBackendActive
+        ? Math.max(10, currentHealth - (fraction * 50))
+        : Math.max(0, currentHealth - (fraction * (currentHealth - 30)));
+
+      const uncertaintySpread = fraction * Math.max(5, uncertaintyRatio * 10);
 
       pts.push({
         cycle: cycleOffset,
@@ -53,7 +69,7 @@ export const DegradationChart: React.FC = () => {
     }
 
     return pts;
-  }, [engineHealth, rul, scenario, degradationRate]);
+  }, [isBackendActive, digitalTwin, prognostics, currentHealth, effectiveRul, scenario]);
 
   return (
     <div className="neo-card h-full flex flex-col bg-white">
@@ -66,22 +82,33 @@ export const DegradationChart: React.FC = () => {
               </h3>
               <JargonTooltip
                 term="Remaining Useful Life (RUL)"
-                explanation="How many operational flight cycles the engine can safely run before health drops to the critical 40% maintenance threshold."
-                analogy="Like the 'distance to empty' estimate on your car dashboard, but forecasting mechanical wear and tear rather than fuel."
-                technicalDetails="Derived using Paris' Law crack growth rate + Arrhenius thermal fatigue acceleration models. Evaluated with 90% confidence envelope."
+                explanation="Prototype decision-support estimate of remaining operational cycles before reaching the critical 40% maintenance threshold. Not a certified airworthiness determination."
+                analogy="Like the 'distance to empty' estimate on your car dashboard, forecasting mechanical wear trends."
+                technicalDetails="Derived from backend fused health history & degradation rate modeling, bounded by confidence intervals."
               />
             </div>
             <span className="text-[10px] font-mono text-neutral-500 font-bold block">
-              {plainLanguageMode ? 'Simulated Remaining Useful Life (RUL) • Maintenance threshold at 40%' : 'Weibull Hazard Rate & Degradation Vector'}
+              {plainLanguageMode
+                ? 'Prototype RUL estimate • Maintenance threshold at 40%'
+                : 'Degradation Trajectory Vector & Bounded Estimate'}
             </span>
           </div>
           <span className="bg-[var(--color-brand-red)] text-white px-1.5 py-0.5 border border-black font-bold text-[10px] shrink-0">
             FAIL LIMIT: 40%
           </span>
+          {isBackendActive ? (
+            <span className="bg-emerald-100 text-emerald-900 border border-emerald-500 px-1.5 py-0.5 font-mono font-bold text-[9px] shrink-0">
+              BACKEND TWIN
+            </span>
+          ) : (
+            <span className="bg-neutral-100 text-neutral-600 border border-neutral-400 px-1.5 py-0.5 font-mono font-bold text-[9px] shrink-0">
+              SIM FALLBACK
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-mono text-gray-500 font-bold hidden sm:inline">
-            RATE: {degradationRate.toFixed(2)}%/100c
+            RATE: {effectiveDegradationRate.toFixed(2)}%/100c
           </span>
           <GuideLink sectionId="10-rul" label="RUL Model" />
         </div>
@@ -105,14 +132,14 @@ export const DegradationChart: React.FC = () => {
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
-                  const data = payload[0].payload;
+                  const item = payload[0].payload;
                   return (
                     <div className="bg-black text-white p-2 text-xs font-mono border-2 border-white">
-                      <div>Cycle: {data.cycle > 0 ? `+${data.cycle}` : data.cycle}</div>
-                      <div>Health: {data.health}%</div>
-                      <div>Confidence Interval: [{data.lowerBound}%, {data.upperBound}%]</div>
+                      <div>Cycle: {item.cycle > 0 ? `+${item.cycle}` : item.cycle}</div>
+                      <div>Health: {item.health}%</div>
+                      <div>Confidence Interval: [{item.lowerBound}%, {item.upperBound}%]</div>
                       <div className="text-[var(--color-brand-yellow)]">
-                        {data.isFuture ? 'Prognostic Forecast' : 'Historical Data'}
+                        {item.isFuture ? 'Prognostic Forecast' : 'Historical Data'}
                       </div>
                     </div>
                   );
@@ -135,10 +162,14 @@ export const DegradationChart: React.FC = () => {
         </ResponsiveContainer>
       </div>
 
-      <div className="flex justify-between items-center mt-2 pt-2 border-t-2 border-black text-[11px] font-mono text-gray-500">
-        <span>Model: Exponential Hazard + Physics Paris Law</span>
+      <div className="flex flex-wrap justify-between items-center mt-2 pt-2 border-t-2 border-black text-[11px] font-mono text-gray-500 gap-1">
+        <span>
+          {isBackendActive
+            ? 'Source: Backend Digital Twin Trajectory'
+            : 'Model: Exponential Hazard + Physics Paris Law (Simulation)'}
+        </span>
         <span className="font-bold text-black">
-          {rul} CYCLES (~{(rul * 0.45).toFixed(0)} FLIGHT HOURS REMAINING)
+          PROTOTYPE RUL ESTIMATE: {effectiveRul} CYCLES (~{(effectiveRul * 0.45).toFixed(0)} FLT HRS)
         </span>
       </div>
     </div>

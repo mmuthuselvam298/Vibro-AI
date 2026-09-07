@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useEngineStore, type ComponentType } from '@/store/engineStore';
+import { useBackendEngineState } from '@/hooks/useBackendEngineState';
 import { computeAdaptiveBaseline } from '@/lib/physicsBaseline';
 import { GuideLink } from './GuideLink';
 import { Eye, Radio } from 'lucide-react';
@@ -7,16 +8,25 @@ import { cn } from '@/lib/utils';
 
 export const DigitalTwin: React.FC = () => {
   const { affectedComponent, telemetry, inferenceLatency, missionProfile } = useEngineStore();
+  const { digitalTwin, backendConnected } = useBackendEngineState();
+
+  const activeFaultComponent =
+    digitalTwin && digitalTwin.active_faults.length > 0 && digitalTwin.active_faults[0].affected_component
+      ? (digitalTwin.active_faults[0].affected_component as ComponentType)
+      : null;
+
+  const effectiveAffectedComponent = activeFaultComponent || affectedComponent;
+
   const [selectedSubAssembly, setSelectedSubAssembly] = useState<ComponentType>(
-    affectedComponent !== 'NONE' ? affectedComponent : 'BEARING'
+    effectiveAffectedComponent !== 'NONE' ? effectiveAffectedComponent : 'BEARING'
   );
 
   // Auto-switch to affected component when scenario changes
   React.useEffect(() => {
-    if (affectedComponent !== 'NONE') {
-      setSelectedSubAssembly(affectedComponent);
+    if (effectiveAffectedComponent !== 'NONE') {
+      setSelectedSubAssembly(effectiveAffectedComponent);
     }
-  }, [affectedComponent]);
+  }, [effectiveAffectedComponent]);
 
   const baseline = React.useMemo(() => {
     return computeAdaptiveBaseline(
@@ -36,7 +46,7 @@ export const DigitalTwin: React.FC = () => {
   const p = baseline.parameters;
 
   const getHighlightClass = (comp: ComponentType) => {
-    const isLocus = affectedComponent === comp;
+    const isLocus = effectiveAffectedComponent === comp;
     const isSelected = selectedSubAssembly === comp;
 
     if (isLocus) {
@@ -49,13 +59,23 @@ export const DigitalTwin: React.FC = () => {
   };
 
   const getSensorClass = (comp: ComponentType) => {
-    return affectedComponent === comp
+    return effectiveAffectedComponent === comp
       ? 'fill-[var(--color-brand-yellow)] stroke-black stroke-[3px] animate-bounce'
       : 'fill-[var(--color-brand-blue)] stroke-black stroke-[2px]';
   };
 
-  // Component Live Telemetry Metadata
+  // Component Live Telemetry Metadata (fused with Backend Subsystems when available)
   const getComponentTelemetry = (comp: ComponentType) => {
+    const subMech = digitalTwin?.subsystems?.MECHANICAL;
+    const subTherm = digitalTwin?.subsystems?.THERMAL;
+    const subComb = digitalTwin?.subsystems?.COMBUSTION_FUEL;
+    const subLub = digitalTwin?.subsystems?.LUBRICATION;
+
+    const backendTrajectoryTrend = digitalTwin?.health_trajectory?.trend_direction;
+    const backendRul = digitalTwin?.prognostics
+      ? `${digitalTwin.prognostics.rul_nominal_cycles} Cycles (Prototype Est)`
+      : null;
+
     switch (comp) {
       case 'BEARING':
       case 'ROLLING_ELEMENT':
@@ -64,9 +84,11 @@ export const DigitalTwin: React.FC = () => {
           expectedVal: `${p.vibrationRms.expected} g`,
           currentVal: `${p.vibrationRms.current} g`,
           deviation: p.vibrationRms.deviationPercent,
-          health: affectedComponent === 'BEARING' || affectedComponent === 'ROLLING_ELEMENT' ? 68 : 98,
-          trend: affectedComponent === 'BEARING' ? 'DEGRADING (BPFO)' : 'STABLE',
-          estRul: affectedComponent === 'BEARING' ? '88 Cycles' : '185 Cycles',
+          health: subMech?.health_score !== null && subMech?.health_score !== undefined
+            ? Math.round(subMech.health_score)
+            : (effectiveAffectedComponent === 'BEARING' || effectiveAffectedComponent === 'ROLLING_ELEMENT' ? 68 : 98),
+          trend: backendTrajectoryTrend || (effectiveAffectedComponent === 'BEARING' ? 'DEGRADING (BPFO)' : 'STABLE'),
+          estRul: backendRul || (effectiveAffectedComponent === 'BEARING' ? '88 Cycles' : '185 Cycles'),
         };
       case 'PISTON':
       case 'COOLING_SYSTEM':
@@ -75,9 +97,11 @@ export const DigitalTwin: React.FC = () => {
           expectedVal: `${p.cht.expected} °C`,
           currentVal: `${p.cht.current} °C`,
           deviation: p.cht.deviationPercent,
-          health: affectedComponent === 'PISTON' ? 58 : 96,
-          trend: affectedComponent === 'PISTON' ? 'DEGRADING (Slap)' : 'NOMINAL',
-          estRul: affectedComponent === 'PISTON' ? '72 Cycles' : '185 Cycles',
+          health: subTherm?.health_score !== null && subTherm?.health_score !== undefined
+            ? Math.round(subTherm.health_score)
+            : (effectiveAffectedComponent === 'PISTON' ? 58 : 96),
+          trend: backendTrajectoryTrend || (effectiveAffectedComponent === 'PISTON' ? 'DEGRADING (Slap)' : 'NOMINAL'),
+          estRul: backendRul || (effectiveAffectedComponent === 'PISTON' ? '72 Cycles' : '185 Cycles'),
         };
       case 'VALVE':
         return {
@@ -85,9 +109,11 @@ export const DigitalTwin: React.FC = () => {
           expectedVal: '4X Harmonic Normal',
           currentVal: `${p.egt.current} °C`,
           deviation: p.egt.deviationPercent,
-          health: affectedComponent === 'VALVE' ? 74 : 99,
-          trend: affectedComponent === 'VALVE' ? 'LASH EXCESS' : 'NOMINAL',
-          estRul: affectedComponent === 'VALVE' ? '110 Cycles' : '185 Cycles',
+          health: subComb?.health_score !== null && subComb?.health_score !== undefined
+            ? Math.round(subComb.health_score)
+            : (effectiveAffectedComponent === 'VALVE' ? 74 : 99),
+          trend: backendTrajectoryTrend || (effectiveAffectedComponent === 'VALVE' ? 'LASH EXCESS' : 'NOMINAL'),
+          estRul: backendRul || (effectiveAffectedComponent === 'VALVE' ? '110 Cycles' : '185 Cycles'),
         };
       case 'OIL_SYSTEM':
         return {
@@ -95,9 +121,11 @@ export const DigitalTwin: React.FC = () => {
           expectedVal: `${p.oilPressure.expected} bar`,
           currentVal: `${p.oilPressure.current} bar`,
           deviation: p.oilPressure.deviationPercent,
-          health: affectedComponent === 'OIL_SYSTEM' ? 35 : 97,
-          trend: affectedComponent === 'OIL_SYSTEM' ? 'PRESSURE DROP' : 'STABLE',
-          estRul: affectedComponent === 'OIL_SYSTEM' ? '32 Cycles' : '185 Cycles',
+          health: subLub?.health_score !== null && subLub?.health_score !== undefined
+            ? Math.round(subLub.health_score)
+            : (effectiveAffectedComponent === 'OIL_SYSTEM' ? 35 : 97),
+          trend: backendTrajectoryTrend || (effectiveAffectedComponent === 'OIL_SYSTEM' ? 'PRESSURE DROP' : 'STABLE'),
+          estRul: backendRul || (effectiveAffectedComponent === 'OIL_SYSTEM' ? '32 Cycles' : '185 Cycles'),
         };
       case 'FUEL_INJECTOR':
         return {
@@ -105,9 +133,11 @@ export const DigitalTwin: React.FC = () => {
           expectedVal: `${p.fuelFlow.expected} L/h`,
           currentVal: `${p.fuelFlow.current} L/h`,
           deviation: p.fuelFlow.deviationPercent,
-          health: affectedComponent === 'FUEL_INJECTOR' ? 62 : 99,
-          trend: affectedComponent === 'FUEL_INJECTOR' ? 'IMBALANCE' : 'NOMINAL',
-          estRul: affectedComponent === 'FUEL_INJECTOR' ? '95 Cycles' : '185 Cycles',
+          health: subComb?.health_score !== null && subComb?.health_score !== undefined
+            ? Math.round(subComb.health_score)
+            : (effectiveAffectedComponent === 'FUEL_INJECTOR' ? 62 : 99),
+          trend: backendTrajectoryTrend || (effectiveAffectedComponent === 'FUEL_INJECTOR' ? 'IMBALANCE' : 'NOMINAL'),
+          estRul: backendRul || (effectiveAffectedComponent === 'FUEL_INJECTOR' ? '95 Cycles' : '185 Cycles'),
         };
       case 'SENSOR_ADXL':
         return {
@@ -125,9 +155,9 @@ export const DigitalTwin: React.FC = () => {
           expectedVal: 'Nominal Envelope',
           currentVal: 'Synchronized',
           deviation: 0,
-          health: 98,
-          trend: 'STABLE',
-          estRul: '185 Cycles',
+          health: digitalTwin ? Math.round(digitalTwin.overall_health_score) : 98,
+          trend: backendTrajectoryTrend || 'STABLE',
+          estRul: backendRul || '185 Cycles',
         };
     }
   };
@@ -135,17 +165,24 @@ export const DigitalTwin: React.FC = () => {
   const compData = getComponentTelemetry(selectedSubAssembly);
 
   return (
-    <div className="neo-card flex flex-col h-[480px] bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
+    <div className="neo-card flex flex-col h-auto min-h-[480px] bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
       {/* Header with Digital Twin Sync Status */}
-      <div className="flex flex-wrap justify-between items-center mb-3 border-b-4 border-black pb-2 gap-2">
+      <div className="flex flex-wrap justify-between items-center mb-2 border-b-4 border-black pb-2 gap-2">
         <div className="flex items-center gap-2">
           <h3 className="font-extrabold text-xl uppercase tracking-tight">
             Digital Twin (Live State)
           </h3>
-          <span className="text-[10px] font-mono font-bold px-2 py-0.5 border border-black bg-emerald-100 text-emerald-900 flex items-center gap-1">
-            <Radio size={12} className="text-emerald-700 animate-pulse" />
-            <span>SYNCED ({inferenceLatency}ms)</span>
-          </span>
+          {backendConnected && digitalTwin ? (
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 border border-black bg-emerald-100 text-emerald-900 flex items-center gap-1.5 shadow-[1px_1px_0px_0px_#000]">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+              <span>BACKEND TWIN: {digitalTwin.operational_status} ({digitalTwin.overall_health_score.toFixed(0)}%)</span>
+            </span>
+          ) : (
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 border border-black bg-neutral-100 text-neutral-800 flex items-center gap-1">
+              <Radio size={12} className="text-gray-600" />
+              <span>SIMULATION FALLBACK ({inferenceLatency}ms)</span>
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <div className="border-2 border-black px-2 py-0.5 font-mono font-extrabold text-[11px] bg-white shadow-[2px_2px_0px_0px_#000]">
@@ -154,6 +191,24 @@ export const DigitalTwin: React.FC = () => {
           <GuideLink sectionId="11-digital-twin" label="Twin Guide" />
         </div>
       </div>
+
+      {/* Backend Provenance, Freshness, and Threshold Metadata Bar */}
+      {backendConnected && digitalTwin && (
+        <div className="mb-2 p-1.5 border-2 border-black bg-neutral-50 font-mono text-[10px] flex flex-wrap items-center justify-between gap-2 shadow-[1px_1px_0px_0px_#000]">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-gray-700">PROVENANCE: {digitalTwin.state_source}</span>
+            <span className="text-gray-400">•</span>
+            <span>TRAJECTORY: <strong>{digitalTwin.health_trajectory.trend_direction}</strong></span>
+            <span className="text-gray-400">•</span>
+            <span>TELEM FRESHNESS: <strong className={digitalTwin.data_freshness.telemetry.status === 'AVAILABLE' ? 'text-emerald-700' : 'text-amber-700'}>{digitalTwin.data_freshness.telemetry.status}</strong></span>
+            <span className="text-gray-400">•</span>
+            <span>VIB FRESHNESS: <strong className={digitalTwin.data_freshness.vibration.status === 'AVAILABLE' ? 'text-emerald-700' : 'text-amber-700'}>{digitalTwin.data_freshness.vibration.status}</strong></span>
+          </div>
+          <div className="text-gray-500 font-semibold" title={digitalTwin.threshold_profile.description}>
+            CONFIG: {digitalTwin.threshold_profile.profile_name} (PROTOTYPE HEURISTICS)
+          </div>
+        </div>
+      )}
 
       {/* Main Schematic Body */}
       <div className="flex-1 bg-[var(--color-brand-light)] border-4 border-black relative overflow-hidden flex items-center justify-center p-2">

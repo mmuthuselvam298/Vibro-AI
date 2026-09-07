@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu, Zap, Clock, Radio, Database, Plane, Sparkles, FileText, Languages } from 'lucide-react';
 import { useEngineStore } from '@/store/engineStore';
+import { useBackendEngineState } from '@/hooks/useBackendEngineState';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
@@ -20,6 +21,8 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, onOpenTour, onOpe
     plainLanguageMode,
     togglePlainLanguageMode,
   } = useEngineStore();
+
+  const { backendConnected, lastUpdated } = useBackendEngineState();
 
   const getAlertColor = () => {
     switch (alertStatus) {
@@ -142,6 +145,25 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, onOpenTour, onOpe
         <div className={cn("neo-badge border-4 px-2.5 py-1 text-xs font-mono font-bold shadow-[var(--shadow-neobrutalism-sm)]", getAlertColor())}>
           {alertStatus}
         </div>
+
+        {/* Backend Connection Status (Lightweight) */}
+        {backendConnected ? (
+          <div
+            className="hidden sm:flex items-center gap-1.5 px-2 py-1 border-2 border-emerald-700 bg-emerald-50 text-emerald-950 font-mono text-[10px] font-bold shadow-[1px_1px_0px_0px_#000]"
+            title={`Backend Digital Twin Connected${lastUpdated ? ` • Updated: ${new Date(lastUpdated).toLocaleTimeString()}` : ''}`}
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+            <span className="truncate">TWIN API</span>
+          </div>
+        ) : (
+          <div
+            className="hidden sm:flex items-center gap-1.5 px-2 py-1 border-2 border-neutral-400 bg-neutral-100 text-neutral-600 font-mono text-[10px] font-bold shadow-[1px_1px_0px_0px_#000]"
+            title="FastAPI unavailable • Using frontend simulation fallback"
+          >
+            <span className="w-2 h-2 rounded-full bg-neutral-400 shrink-0" />
+            <span className="truncate">SIM FALLBACK</span>
+          </div>
+        )}
       </div>
     </header>
   );
