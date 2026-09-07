@@ -30,6 +30,14 @@ class VibrationBurst(SQLModel, table=True):
         default=None,
         description="URI, file path, or object storage key for raw float samples array"
     )
+    rpm: Optional[float] = Field(
+        default=None,
+        description="Engine rotational speed in RPM at burst acquisition"
+    )
+    is_simulated: bool = Field(
+        default=True,
+        description="True if generated from simulation model or test bench"
+    )
 
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
@@ -68,13 +76,27 @@ class VibrationFeature(SQLModel, table=True):
     # Spectral & Kinematic Harmonic Features (derived from FFT)
     dominant_frequency: float = Field(description="Dominant spectral peak in Hz")
     spectral_energy: float = Field(description="Total spectral energy")
-    harmonic_energy_1x: float = Field(default=0.0, description="1X shaft rotational harmonic (~60 Hz)")
-    harmonic_energy_2x: float = Field(default=0.0, description="2X shaft harmonic (~120 Hz)")
-    harmonic_energy_4x: float = Field(default=0.0, description="4X valve train harmonic (~240 Hz)")
-    bpfo_band_energy: float = Field(default=0.0, description="Bearing Ball Pass Frequency Outer Race (140-160 Hz)")
-    bsf_band_energy: float = Field(default=0.0, description="Ball Spin Frequency (75-85 Hz)")
+    harmonic_energy_1x: float = Field(default=0.0, description="Fundamental rotational harmonic indicator (1X)")
+    harmonic_energy_2x: float = Field(default=0.0, description="Second-order harmonic indicator (2X; candidate mechanical signature requiring corroboration)")
+    harmonic_energy_4x: float = Field(default=0.0, description="Fourth-order harmonic indicator (4X; candidate mechanical signature requiring corroboration)")
+    bpfo_band_energy: float = Field(default=0.0, description="BPFO-candidate band energy (illustrative prototype factor pending bearing geometry)")
+    bsf_band_energy: float = Field(default=0.0, description="BSF-candidate band energy (illustrative prototype factor pending bearing geometry)")
     high_freq_energy_ratio: float = Field(default=0.0, description="High-frequency broadband energy ratio (>250 Hz)")
-    wpd_dominant_band: Optional[str] = Field(default=None, description="Dominant Wavelet Packet sub-band")
+    wpd_dominant_band: Optional[str] = Field(default=None, description="Dominant spectral sub-band identifier from frequency-band analysis")
+
+    # Order Analysis & Decision-Support Candidate Indicators
+    dominant_order: Optional[float] = Field(
+        default=None,
+        description="Dominant harmonic order normalized by shaft rotational speed (freq / (RPM/60))"
+    )
+    shaft_frequency_hz: Optional[float] = Field(
+        default=None,
+        description="Calculated shaft rotational fundamental frequency in Hz (RPM / 60)"
+    )
+    candidate_anomaly_indicator: Optional[str] = Field(
+        default=None,
+        description="Prototype decision-support candidate vibration signature (requires corroboration; not a confirmed diagnosis)"
+    )
 
     # Relationships
     burst: Optional[VibrationBurst] = Relationship(back_populates="feature")

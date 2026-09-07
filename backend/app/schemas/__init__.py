@@ -13,6 +13,12 @@ from .prognostics import (
     WhatIfEvaluationRequest,
     WhatIfEvaluationResponse,
 )
+from .vibration import (
+    VibrationBurstIngest,
+    VibrationBurstRead,
+    VibrationFeatureRead,
+    VibrationAnalysisResponse,
+)
 
 __all__ = [
     "MissionCreate",
@@ -32,4 +38,8 @@ __all__ = [
     "PrognosticSnapshotRead",
     "WhatIfEvaluationRequest",
     "WhatIfEvaluationResponse",
+    "VibrationBurstIngest",
+    "VibrationBurstRead",
+    "VibrationFeatureRead",
+    "VibrationAnalysisResponse",
 ]

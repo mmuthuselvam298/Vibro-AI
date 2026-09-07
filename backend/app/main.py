@@ -12,6 +12,7 @@ from .api import (
     maintenance_router,
     health_router,
     prognostics_router,
+    vibration_router,
 )
 
 
@@ -61,3 +62,4 @@ app.include_router(faults_router, prefix="/api")
 app.include_router(maintenance_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
 app.include_router(prognostics_router, prefix="/api")
+app.include_router(vibration_router, prefix="/api")
