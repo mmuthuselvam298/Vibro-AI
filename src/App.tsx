@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import { useSimulation } from './hooks/useSimulation';
+import { BackendSyncBridge } from './components/common/BackendSyncBridge';
 
 // Pages
 import { CommandCenter } from './pages/CommandCenter';
@@ -17,6 +18,7 @@ function App() {
 
   return (
     <Router>
+      <BackendSyncBridge />
       <Layout>
         <Routes>
           <Route path="/" element={<Navigate to="/command-center" replace />} />

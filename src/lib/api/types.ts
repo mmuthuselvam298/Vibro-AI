@@ -24,6 +24,88 @@ export interface Engine {
   updated_at: string;
 }
 
+export interface TelemetryIngest {
+  engine_id: number;
+  mission_id?: number | null;
+  timestamp?: string | null;
+  mission_time_seconds?: number;
+  operating_cycle?: number;
+  rpm: number;
+  cht: number;
+  egt: number;
+  oil_pressure: number;
+  oil_temp: number;
+  fuel_flow: number;
+  vibration_rms: number;
+  battery_voltage?: number;
+  injection_timing?: number;
+  expected_rpm?: number | null;
+  expected_cht?: number | null;
+  expected_egt?: number | null;
+  expected_oil_pressure?: number | null;
+  expected_oil_temp?: number | null;
+  expected_fuel_flow?: number | null;
+  expected_vibration_rms?: number | null;
+  overall_deviation_score?: number | null;
+  status?: string;
+  alternator_health?: number | null;
+  ambient_temp?: number | null;
+  altitude_ft?: number | null;
+  throttle_position?: number | null;
+  aux_pressure_bar?: number | null;
+  aux_temp_c?: number | null;
+}
+
+export interface TelemetryIngestResponse {
+  status: string;
+  persisted_to_db: boolean;
+  engine_id: number;
+  timestamp: string;
+  frame_id: number | null;
+  message: string;
+}
+
+export interface VibrationBurstIngest {
+  timestamp?: string | null;
+  sampling_rate_hz?: number;
+  rpm?: number | null;
+  mission_id?: number | null;
+  axis?: string;
+  trigger_reason?: string;
+  is_simulated?: boolean;
+  samples?: number[] | null;
+  axis_data?: Record<string, number[]> | null;
+}
+
+export interface VibrationAnalysisResponse {
+  burst: VibrationBurstRead;
+  features: VibrationFeatureRead;
+  frequency_bands?: Array<Record<string, unknown>> | null;
+  wpd_bands?: Array<Record<string, unknown>> | null;
+  spectrum_summary?: Array<Record<string, unknown>> | null;
+  processing_metadata?: Record<string, unknown>;
+}
+
+export interface SyncStatus {
+  enabled: boolean;
+  activeEngineId: number | null;
+  isTelemetryInFlight: boolean;
+  isVibrationInFlight: boolean;
+  lastTelemetrySync: string | null;
+  lastVibrationSync: string | null;
+  lastTelemetryStatus: string | null;
+  telemetryPersisted: boolean | null;
+  backendConnected: boolean | null;
+  lastError: string | null;
+}
+
+export interface UseBackendSyncOptions {
+  enabled?: boolean;
+  engineId?: number | null;
+  telemetryIntervalMs?: number;
+  vibrationIntervalMs?: number;
+}
+
 export interface TelemetryFrameRead {
   id: number | null;
   engine_id: number;

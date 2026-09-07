@@ -2,8 +2,12 @@ import type {
   BackendHealthResponse,
   Engine,
   TelemetryFrameRead,
+  TelemetryIngest,
+  TelemetryIngestResponse,
   VibrationBurstRead,
+  VibrationBurstIngest,
   VibrationFeatureRead,
+  VibrationAnalysisResponse,
   HealthRecordRead,
   PrognosticSnapshotRead,
   FaultEventRead,
@@ -55,6 +59,9 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
   const headers = new Headers(options.headers || {});
   if (!headers.has('Accept')) {
     headers.set('Accept', 'application/json');
+  }
+  if (options.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
   }
 
   let response: Response;
@@ -210,5 +217,33 @@ export async function getMaintenanceAdvisories(
 ): Promise<MaintenanceAdvisoryResponse[]> {
   return apiRequest<MaintenanceAdvisoryResponse[]>(
     `/api/engines/${engineId}/maintenance/advisories`,
+  );
+}
+
+/**
+ * Ingest a telemetry frame to the backend buffer / persistence pipeline.
+ */
+export async function ingestTelemetry(
+  payload: TelemetryIngest,
+): Promise<TelemetryIngestResponse> {
+  return apiRequest<TelemetryIngestResponse>('/api/telemetry/ingest', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Ingest a vibration burst to the backend DSP and feature extraction pipeline.
+ */
+export async function ingestVibrationBurst(
+  engineId: number,
+  payload: VibrationBurstIngest,
+): Promise<VibrationAnalysisResponse> {
+  return apiRequest<VibrationAnalysisResponse>(
+    `/api/engines/${engineId}/vibration/ingest`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
   );
 }
