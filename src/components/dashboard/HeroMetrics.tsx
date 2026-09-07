@@ -80,7 +80,7 @@ export const HeroMetrics: React.FC = () => {
           <div className="text-xs mt-2 uppercase font-extrabold font-mono tracking-wider pt-1 border-t-2 border-current flex items-center justify-between">
             <span>STATUS: {alertStatus}</span>
             <span className="text-[10px] opacity-85 font-normal">
-              {isHealthy ? 'CLEARED TO FLY' : isWarning ? 'NEEDS WATCHING' : 'GROUND / ABORT'}
+              {isHealthy ? 'NOMINAL • MONITOR' : isWarning ? 'PRIORITY WATCH' : 'IMMEDIATE REVIEW'}
             </span>
           </div>
         </div>
@@ -101,7 +101,7 @@ export const HeroMetrics: React.FC = () => {
               />
             </div>
             <span className="text-[10px] font-mono text-gray-500 block mt-0.5">
-              Live automated diagnosis
+              Live candidate indicator
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -142,16 +142,16 @@ export const HeroMetrics: React.FC = () => {
           <div>
             <div className="flex items-center gap-1">
               <span className="font-extrabold uppercase tracking-wider text-xs text-gray-600">
-                {plainLanguageMode ? 'Evidence Match' : 'AI Confidence'}
+                {plainLanguageMode ? 'Evidence Agreement' : 'Pattern Agreement'}
               </span>
               <JargonTooltip
                 term="AI Evidence Match"
-                explanation="How strongly the sensor readings agree with this specific fault pattern. High confidence (>85%) means vibration, heat, and oil all point to the same physical issue."
+                explanation="How strongly the sensor readings agree with this specific fault pattern. Evidence agreement metric; not a guaranteed failure probability."
                 technicalDetails="Calibrated posterior probability from multi-parameter feature distance engine."
               />
             </div>
             <span className="text-[10px] font-mono text-gray-500 block mt-0.5">
-              Multi-sensor agreement rate
+              Multi-sensor agreement metric
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -172,7 +172,7 @@ export const HeroMetrics: React.FC = () => {
           </div>
           <div className="text-[10px] font-mono text-neutral-500 mt-1 flex justify-between">
             <span>PHYSICS CORROBORATED</span>
-            <span className="font-bold text-neutral-800">NO BLACK BOX</span>
+            <span className="font-bold text-neutral-800">DECISION-SUPPORT</span>
           </div>
         </div>
       </div>
@@ -183,16 +183,16 @@ export const HeroMetrics: React.FC = () => {
           <div>
             <div className="flex items-center gap-1">
               <span className="font-extrabold uppercase tracking-wider text-xs text-gray-300">
-                {plainLanguageMode ? 'Time Left Before Service' : 'Simulated RUL'}
+                {plainLanguageMode ? 'Estimated Cycles (Prototype)' : 'Prototype RUL Estimate'}
               </span>
               <JargonTooltip
                 term="RUL (Remaining Useful Life)"
-                explanation="Predicted operating cycles remaining before component degradation reaches the 40% failure boundary. Helps schedule turnaround service before flight aborts happen."
-                analogy="Like the 'miles to empty' gauge in a car, but for mechanical wear on engine bearings."
+                explanation="Prototype decision-support estimate of operating cycles remaining before component degradation reaches the 40% threshold. Not a certified airworthiness determination."
+                analogy="Like an estimated range gauge, forecasting mechanical wear trends."
               />
             </div>
             <span className="text-[10px] font-mono text-gray-400 block mt-0.5">
-              Remaining Useful Life Forecast
+              Decision-Support Estimate
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -206,7 +206,7 @@ export const HeroMetrics: React.FC = () => {
             {rul} <span className="text-lg font-sans font-extrabold text-gray-300">CYCLES</span>
           </div>
           <div className="text-xs mt-2 uppercase font-extrabold font-mono tracking-wider pt-1 border-t-2 border-gray-600 text-gray-300 flex items-center justify-between">
-            <span>~{approxFlightHours} FLIGHT HOURS</span>
+            <span>~{approxFlightHours} FLT HRS (ESTIMATE)</span>
             <span className="text-[10px] text-gray-400 font-normal">FAIL LIMIT: 40%</span>
           </div>
         </div>

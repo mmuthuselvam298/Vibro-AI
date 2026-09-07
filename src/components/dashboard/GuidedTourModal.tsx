@@ -20,8 +20,8 @@ export const GuidedTourModal: React.FC<GuidedTourModalProps> = ({ isOpen, onClos
       icon: <Activity size={24} className="text-black" />,
       headline: `Current Engine Health is ${engineHealth.toFixed(1)}% (${alertStatus})`,
       explanation:
-        'The very first thing an operator or judge needs to know: is this UAV engine safe to fly? Unlike traditional threshold warning lights that only buzz after catastrophic seizure, Vibro-AI continuously scores health from 0% to 100%.',
-      whatToLookFor: 'Look at the top-left ENGINE HEALTH card. Green (>85%) means safe; Yellow (40–85%) means degrading; Red (<40%) demands immediate landing.',
+        'The very first thing an operator or engineer evaluates: what is the decision-support health status of this UAV engine? Unlike traditional threshold warning lights that only buzz after catastrophic damage, Vibro-AI continuously scores health from 0% to 100%.',
+      whatToLookFor: 'Look at the top-left ENGINE HEALTH card. Green (>85%) indicates nominal condition; Yellow (40–85%) indicates early degradation; Red (<40%) recommends immediate review.',
       badge: 'HEALTH SCORE',
     },
     {
@@ -38,7 +38,7 @@ export const GuidedTourModal: React.FC<GuidedTourModalProps> = ({ isOpen, onClos
       icon: <ShieldAlert size={24} className="text-black" />,
       headline: `Active Diagnosis: ${faultType === 'None (Nominal Operation)' ? 'All Systems Normal' : faultType}`,
       explanation:
-        'Instead of an opaque "AI black box", the system explains its decision: it combines high-frequency vibration signals (the mechanical fingerprint) with temperature, oil pressure, and fuel flow to prove the fault is real and physically consistent.',
+        'Instead of an opaque "AI black box", the system explains its decision: it combines high-frequency vibration signals (the mechanical fingerprint) with temperature, oil pressure, and fuel flow to demonstrate candidate fault consistency.',
       whatToLookFor: 'See the "Why Did The System Flag This?" panel. It lists the top contributing sensor deviations so operators know exactly which part is wearing out.',
       badge: 'EXPLAINABLE AI',
     },
@@ -47,8 +47,8 @@ export const GuidedTourModal: React.FC<GuidedTourModalProps> = ({ isOpen, onClos
       icon: <Compass size={24} className="text-black" />,
       headline: `Estimated Time Left: ${rul} Operating Cycles`,
       explanation:
-        'Operators need to know when maintenance is required before sending a drone on a 2-hour mission. The prognostics engine calculates Remaining Useful Life (RUL) with confidence bands and safe flight hours.',
-      whatToLookFor: 'Look at the Est. RUL card and the Mission Timeline clock. It compares the time left in the flight vs how long the engine is predicted to safely run.',
+        'Operators need decision support to schedule turnaround maintenance. The prognostics engine calculates prototype Remaining Useful Life (RUL) estimates with confidence bands and degradation margins.',
+      whatToLookFor: 'Look at the Est. RUL card and the Mission Timeline clock. It compares the required mission time vs the estimated operating margin before reaching maintenance limits.',
       badge: 'RUL FORECAST',
     },
     {
@@ -56,8 +56,8 @@ export const GuidedTourModal: React.FC<GuidedTourModalProps> = ({ isOpen, onClos
       icon: <Wrench size={24} className="text-black" />,
       headline: 'Actionable Advice & What-If Simulation',
       explanation:
-        'The system doesn’t just show red alerts — it provides clear guidance: "Continue Mission", "Reduce Load by 15%", or "Return to Base". Operators can even test candidate decisions inside the interactive "What-If" simulator before executing them in flight.',
-      whatToLookFor: 'Check the Operator Advisory card and click the "What-If Simulation" button to see how throttling back 15% immediately extends engine life.',
+        'The system doesn’t just show alerts — it provides actionable decision support: "Continue Monitoring", "Reduce Load by 15%", or "Priority Review". Operators can even evaluate candidate operational adjustments inside the interactive "What-If" simulator.',
+      whatToLookFor: 'Check the Operator Advisory card and click the "What-If Simulation" button to see how throttling back 15% immediately extends estimated component life.',
       badge: 'DECISION SUPPORT',
     },
   ];

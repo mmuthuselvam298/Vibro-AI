@@ -210,16 +210,16 @@ export function computeOperatorDecision(
   if (severity === 'CRITICAL' || reliabilityScore < 35 || health < 50 || marginRatio < 0.8) {
     return {
       actionCode: 'RETURN_TO_BASE',
-      actionText: 'RETURN TO BASE / ABORT MISSION',
+      actionText: 'PRIORITY REVIEW / PLAN RTB',
       badgeColor: 'bg-[var(--color-brand-red)] text-white border-black animate-pulse',
       textColor: 'text-red-700',
       urgencyLevel: 'RED',
-      primaryReason: `Severe degradation rate predicts RUL of ${rul.rulMin}–${rul.rulMax} cycles, which is below the mandatory 1.5X mission safety reserve.`,
+      primaryReason: `High degradation rate projects RUL of ${rul.rulMin}–${rul.rulMax} cycles, which is below the target decision-support margin.`,
       predictedEffectOfLoadReduction: {
         healthStressReductionPercent: 28,
         estimatedRulIncreaseCycles: 15,
         missionReliabilityIncreasePercent: 12,
-        projectedNewStatus: 'EXTENDED RETURN HORIZON (SAFELY REACH RTB)',
+        projectedNewStatus: 'EXTENDED RETURN HORIZON (REDUCE EXPOSURE)',
       },
     };
   }
@@ -260,11 +260,11 @@ export function computeOperatorDecision(
 
   return {
     actionCode: 'CONTINUE_MISSION',
-    actionText: 'CONTINUE MISSION (NOMINAL FLIGHT PROFILE)',
+    actionText: 'CONTINUE MONITORING (NOMINAL PROFILE)',
     badgeColor: 'bg-[var(--color-brand-green)] text-black border-black',
     textColor: 'text-emerald-800',
     urgencyLevel: 'GREEN',
-    primaryReason: 'Engine telemetry matches expected healthy physical baseline. Safe operation horizon comfortably exceeds remaining mission duration.',
+    primaryReason: 'Engine telemetry matches expected healthy physical baseline. Estimated operating margin comfortably exceeds remaining mission duration.',
     predictedEffectOfLoadReduction: {
       healthStressReductionPercent: 8,
       estimatedRulIncreaseCycles: 18,
@@ -314,8 +314,8 @@ export function simulateWhatIfAction(
         projectedRulCycles: currentRul,
         projectedReliability: Math.min(99.0, Math.round(currentReliability + 32)),
         projectedStressReduction: 38,
-        projectedStatus: 'SAFETY ASSURED',
-        recommendationNote: 'Collapses remaining mission exposure time, ensuring safe ground landing well before failure boundary.',
+        projectedStatus: 'CONSERVATIVE PROFILE',
+        recommendationNote: 'Reduces operational exposure time, supporting maintenance review before reaching degradation threshold.',
       };
 
     case 'BASELINE':

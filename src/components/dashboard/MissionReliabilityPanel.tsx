@@ -55,17 +55,17 @@ export const MissionReliabilityPanel: React.FC<MissionReliabilityPanelProps> = (
           <div>
             <div className="flex items-center gap-1.5">
               <h3 className="font-extrabold text-lg uppercase tracking-tight leading-none">
-                {plainLanguageMode ? 'Can This Engine Finish The Mission? (Mission GO / NO-GO)' : 'Mission Reliability Engine'}
+                {plainLanguageMode ? 'Mission Readiness Evaluation (Decision-Support)' : 'Mission Reliability Engine'}
               </h3>
               <JargonTooltip
-                term="Mission GO / NO-GO Determination"
-                explanation="Compares remaining flight duration against predicted engine safe operation hours before failure. Answers: 'Can we launch this UAV without engine seizure mid-flight?'"
-                analogy="Like checking if your car has enough fuel and oil to make a 300 km highway trip without breaking down in the desert."
+                term="Mission Readiness Evaluation"
+                explanation="Evaluates estimated margin between remaining mission profile and projected component wear threshold. Decision-support heuristic only; not a flight clearance determination."
+                analogy="Like checking if your estimated vehicle range exceeds the planned trip distance with a safe buffer."
                 technicalDetails="Reliability Score = P(Engine Survival > T_mission). Calculated from Weibull cumulative distribution & RUL safety margins."
               />
             </div>
             <span className="text-[10px] font-mono text-gray-500 uppercase font-bold block mt-0.5">
-              {plainLanguageMode ? 'Compares required flight time against safe engine operating margin' : 'SIH26054 Operational Readiness & Decision Support'}
+              {plainLanguageMode ? 'Compares mission duration against decision-support margin' : 'SIH26054 Operational Readiness & Decision Support'}
             </span>
           </div>
         </div>
@@ -103,7 +103,7 @@ export const MissionReliabilityPanel: React.FC<MissionReliabilityPanelProps> = (
               isWatch ? "bg-[var(--color-brand-yellow)] text-black" : "bg-[var(--color-brand-red)] text-white"
             )}>
               {plainLanguageMode
-                ? (isCapable ? '✓ MISSION GO' : isWatch ? '⚠️ CAUTION / WATCH' : '⛔ NO-GO / ABORT')
+                ? (isCapable ? '✓ NOMINAL / CAPABLE' : isWatch ? '⚠️ CAUTION / WATCH' : '⛔ PRIORITY REVIEW')
                 : status.replace(/_/g, ' ')}
             </span>
           </div>
@@ -131,7 +131,7 @@ export const MissionReliabilityPanel: React.FC<MissionReliabilityPanelProps> = (
         {/* Card 2: Mission Clocks Comparison */}
         <div className="p-4 border-2 border-black bg-white flex flex-col justify-between shadow-[2px_2px_0px_0px_#000]">
           <span className="text-xs font-mono font-bold uppercase text-gray-500 block mb-2">
-            Mission Timeline vs Safe Operation Horizon
+            Mission Timeline vs Estimated Operating Margin
           </span>
 
           <div className="grid grid-cols-2 gap-2 font-mono text-center">
@@ -147,12 +147,12 @@ export const MissionReliabilityPanel: React.FC<MissionReliabilityPanelProps> = (
               "p-2 border border-black",
               isAtRisk ? "bg-red-100 text-red-900 font-bold" : "bg-green-50 text-green-900"
             )}>
-              <span className="text-[10px] block opacity-80">PREDICTED SAFE TIME</span>
+              <span className="text-[10px] block opacity-80">ESTIMATED OPERATING MARGIN</span>
               <span className="text-lg sm:text-xl font-extrabold block">
                 {predictedSafeOperationStr}
               </span>
               <span className="text-[9px] opacity-80">
-                {rulResult.rulMin}–{rulResult.rulMax} Cycles RUL
+                {rulResult.rulMin}–{rulResult.rulMax} Cycles (Prototype RUL)
               </span>
             </div>
           </div>

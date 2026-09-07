@@ -408,7 +408,7 @@ export const SystemGuidePage: React.FC = () => {
               <div className="p-3 border-2 border-black bg-red-100 text-red-900">
                 <div className="font-bold">CRITICAL</div>
                 <div>Health &lt; 40%</div>
-                <div className="text-[10px] font-bold mt-1">Immediate Grounding</div>
+                <div className="text-[10px] font-bold mt-1">Immediate Review Recommended</div>
               </div>
             </div>
           </section>

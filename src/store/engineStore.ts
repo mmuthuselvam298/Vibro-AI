@@ -164,7 +164,7 @@ const scenarioDefinitions: Record<ScenarioType, ScenarioDetail> = {
     degradationRate: 0.58,
     affectedComponent: 'BEARING',
     alertStatus: 'WARNING',
-    fusionSummary: 'Vibration ↑ + BPFO 150Hz harmonic + RPM-normalized anomaly + minor oil temp increase confirmed.',
+    fusionSummary: 'Vibration ↑ + BPFO 150Hz harmonic + RPM-normalized anomaly + minor oil temp increase detected.',
     maintenanceAction: 'Inspect and borescope main crank bearing outer race at next scheduled turnaround.',
     maintenanceUrgency: 'NEXT_SCHEDULED',
     evidencePoints: [
@@ -194,8 +194,8 @@ const scenarioDefinitions: Record<ScenarioType, ScenarioDetail> = {
     degradationRate: 2.85,
     affectedComponent: 'BEARING',
     alertStatus: 'CRITICAL',
-    fusionSummary: 'High BPFO harmonics + Kurtosis 8.7 + Oil pressure drop (−0.5 bar) + Oil temp +12°C indicate impending seizure.',
-    maintenanceAction: 'IMMEDIATE GROUNDING: Remove engine for complete main bearing teardown and replacement.',
+    fusionSummary: 'High BPFO harmonics + Kurtosis 8.7 + Oil pressure drop (−0.5 bar) + Oil temp +12°C indicate severe mechanical degradation.',
+    maintenanceAction: 'IMMEDIATE REVIEW: Recommend borescope examination and oil filter inspection for bearing spalling.',
     maintenanceUrgency: 'IMMEDIATE_GROUND',
     evidencePoints: [
       'Strong BPFO harmonics (150Hz, 300Hz, 450Hz) exceeding ISO 10816 Class IV limits',

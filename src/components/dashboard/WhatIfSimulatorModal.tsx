@@ -51,7 +51,7 @@ export const WhatIfSimulatorModal: React.FC<WhatIfSimulatorModalProps> = ({ isOp
     { id: 'BASELINE', title: 'Continue Current Flight Profile', subtitle: 'No intervention, maintain current throttle & RPM' },
     { id: 'REDUCE_LOAD_15', title: 'Throttle Back -15% Manifold Load', subtitle: 'Reduces journal bearing contact stress & heat rejection demand' },
     { id: 'REDUCE_RPM_10', title: 'Reduce Governor RPM by 10% (3,240 RPM)', subtitle: 'Lowers dynamic cyclic impact velocity at bearing raceway' },
-    { id: 'RETURN_TO_BASE', title: 'Immediate Return-to-Base (RTB)', subtitle: 'Abbreviates mission horizon to safe 20m landing corridor' },
+    { id: 'RETURN_TO_BASE', title: 'Immediate Return-to-Base (RTB)', subtitle: 'Abbreviates mission exposure to 20m landing corridor' },
   ];
 
   return (
