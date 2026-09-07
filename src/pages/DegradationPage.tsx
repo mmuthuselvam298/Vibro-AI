@@ -1,5 +1,6 @@
 import React from 'react';
 import { DegradationChart } from '@/components/dashboard/DegradationChart';
+import { MissionReliabilityPanel } from '@/components/dashboard/MissionReliabilityPanel';
 import { MissionReplayWidget } from '@/components/dashboard/MissionReplayWidget';
 import { useEngineStore } from '@/store/engineStore';
 import { GuideLink } from '@/components/dashboard/GuideLink';
@@ -76,6 +77,9 @@ export const DegradationPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Mission Reliability & Operational Safety Horizon */}
+      <MissionReliabilityPanel />
 
       {/* Mission Simulator & Replay Scrubber */}
       <MissionReplayWidget />

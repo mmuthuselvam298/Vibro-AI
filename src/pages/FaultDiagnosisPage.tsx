@@ -1,5 +1,6 @@
 import React from 'react';
 import { DiagnosisPanel } from '@/components/dashboard/DiagnosisPanel';
+import { ExpectedVsCurrentBars } from '@/components/dashboard/ExpectedVsCurrentBars';
 import { MaintenanceAdvisoryPanel } from '@/components/dashboard/MaintenanceAdvisoryPanel';
 import { SensorFusionCard } from '@/components/dashboard/SensorFusionCard';
 import { GuideLink } from '@/components/dashboard/GuideLink';
@@ -22,6 +23,9 @@ export const FaultDiagnosisPage: React.FC = () => {
           <GuideLink sectionId="07-ai-fault-diagnosis" label="AI Architecture Guide" />
         </div>
       </div>
+
+      {/* Expected Healthy State vs Current Live Engine */}
+      <ExpectedVsCurrentBars />
 
       {/* Sensor Fusion Decision Cross-Check */}
       <SensorFusionCard />

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import { HeroMetrics } from '@/components/dashboard/HeroMetrics';
+import { ExpectedVsCurrentBars } from '@/components/dashboard/ExpectedVsCurrentBars';
+import { MissionReliabilityPanel } from '@/components/dashboard/MissionReliabilityPanel';
+import { HealthBreakdownCard } from '@/components/dashboard/HealthBreakdownCard';
+import { WhatIfSimulatorModal } from '@/components/dashboard/WhatIfSimulatorModal';
 import { SensorFusionCard } from '@/components/dashboard/SensorFusionCard';
 import { TelemetryGrid } from '@/components/dashboard/TelemetryGrid';
 import { LiveVibration } from '@/components/dashboard/LiveVibration';
@@ -11,13 +15,14 @@ import { DegradationChart } from '@/components/dashboard/DegradationChart';
 import { PhysicsResidualPanel } from '@/components/dashboard/PhysicsResidualPanel';
 import { MaintenanceAdvisoryPanel } from '@/components/dashboard/MaintenanceAdvisoryPanel';
 import { MissionReplayWidget } from '@/components/dashboard/MissionReplayWidget';
-import { LayoutGrid, Cpu, Activity, Scale, Compass } from 'lucide-react';
+import { LayoutGrid, Cpu, Activity, Scale, Compass, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type ViewMode = 'OVERVIEW' | 'TELEMETRY' | 'DIAGNOSTICS' | 'DSP_RUL' | 'ALL';
 
 export const CommandCenter: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('OVERVIEW');
+  const [isWhatIfOpen, setIsWhatIfOpen] = useState<boolean>(false);
 
   const tabs: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
     { id: 'OVERVIEW', label: 'Overview Deck', icon: <LayoutGrid size={15} /> },
@@ -29,11 +34,14 @@ export const CommandCenter: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-5 max-w-[1600px] mx-auto animate-in fade-in duration-300 pb-16">
-      {/* Top Banner & Hero KPI Metrics */}
+      {/* 1. Top Banner & Hero KPI Metrics */}
       <AlertBanner />
       <HeroMetrics />
 
-      {/* Module Navigation Tabs */}
+      {/* 2. PROMINENT CORE SECTION: EXPECTED HEALTHY STATE VS CURRENT LIVE ENGINE */}
+      <ExpectedVsCurrentBars />
+
+      {/* 3. Module Navigation Tabs & Quick Actions */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-black pb-3">
         <div className="flex items-center gap-1.5 overflow-x-auto p-1 bg-neutral-100 border-2 border-black">
           {tabs.map((tab) => {
@@ -56,22 +64,37 @@ export const CommandCenter: React.FC = () => {
           })}
         </div>
 
-        <div className="text-[11px] font-mono text-gray-500 font-semibold hidden md:block">
-          UAV ENGINE HEALTH MONITORING & PROGNOSTICS SYSTEM (SIH26054)
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsWhatIfOpen(true)}
+            className="px-3 py-1.5 font-mono text-xs font-bold bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-all flex items-center gap-1.5 shadow-[2px_2px_0px_0px_#000]"
+          >
+            <Sparkles size={14} className="text-yellow-500" />
+            <span>WHAT-IF DIGITAL TWIN</span>
+          </button>
+          <div className="text-[11px] font-mono text-gray-500 font-semibold hidden lg:block">
+            SIH26054 AEROSPACE HEALTH & RELIABILITY TWIN
+          </div>
         </div>
       </div>
 
-      {/* View 1: Core Overview Deck (Matches First Version Primary Viewport) */}
+      {/* View 1: Core Overview Deck */}
       {viewMode === 'OVERVIEW' && (
         <div className="flex flex-col gap-6 animate-in fade-in duration-200">
-          {/* Primary Observability Grid: Vibration Waveform & Spatial Digital Twin */}
+          {/* Observability Row: Vibration Waveform & Spatial Digital Twin */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <LiveVibration />
             <DigitalTwin />
           </div>
 
-          {/* Sensor Fusion Synthesis Card */}
-          <SensorFusionCard />
+          {/* Mission Reliability & Operator Decision Support */}
+          <MissionReliabilityPanel onOpenWhatIf={() => setIsWhatIfOpen(true)} />
+
+          {/* Transparent Health Score Breakdown & Sensor Fusion Summary */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <HealthBreakdownCard />
+            <SensorFusionCard />
+          </div>
 
           {/* Actionable Engineering Advisory & Mission Scrubber */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -95,6 +118,9 @@ export const CommandCenter: React.FC = () => {
           <DiagnosisPanel />
           <PhysicsResidualPanel />
           <div className="lg:col-span-2">
+            <HealthBreakdownCard />
+          </div>
+          <div className="lg:col-span-2">
             <MaintenanceAdvisoryPanel />
           </div>
         </div>
@@ -102,25 +128,32 @@ export const CommandCenter: React.FC = () => {
 
       {/* View 4: Signal DSP & RUL Prognostics */}
       {viewMode === 'DSP_RUL' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 animate-in fade-in duration-200">
-          <LiveVibration />
-          <SignalAnalysis />
-          <div className="lg:col-span-2">
-            <DegradationChart />
+        <div className="flex flex-col gap-5 animate-in fade-in duration-200">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <LiveVibration />
+            <SignalAnalysis />
           </div>
+          <DegradationChart />
+          <MissionReliabilityPanel onOpenWhatIf={() => setIsWhatIfOpen(true)} />
         </div>
       )}
 
       {/* View 5: Full Deck (All Modules Organized) */}
       {viewMode === 'ALL' && (
         <div className="flex flex-col gap-5 animate-in fade-in duration-200">
-          <SensorFusionCard />
-          <TelemetryGrid />
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <LiveVibration />
             <DigitalTwin />
           </div>
+
+          <MissionReliabilityPanel onOpenWhatIf={() => setIsWhatIfOpen(true)} />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <HealthBreakdownCard />
+            <SensorFusionCard />
+          </div>
+
+          <TelemetryGrid />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <DiagnosisPanel />
@@ -136,6 +169,12 @@ export const CommandCenter: React.FC = () => {
           <MissionReplayWidget />
         </div>
       )}
+
+      {/* What-If Simulation Modal */}
+      <WhatIfSimulatorModal
+        isOpen={isWhatIfOpen}
+        onClose={() => setIsWhatIfOpen(false)}
+      />
     </div>
   );
 };

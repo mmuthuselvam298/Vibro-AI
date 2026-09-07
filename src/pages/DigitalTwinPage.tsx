@@ -1,5 +1,6 @@
 import React from 'react';
 import { DigitalTwin } from '@/components/dashboard/DigitalTwin';
+import { ExpectedVsCurrentBars } from '@/components/dashboard/ExpectedVsCurrentBars';
 import { TelemetryGrid } from '@/components/dashboard/TelemetryGrid';
 import { useEngineStore } from '@/store/engineStore';
 import { GuideLink } from '@/components/dashboard/GuideLink';
@@ -121,6 +122,9 @@ export const DigitalTwinPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Expected Healthy State vs Current Live Engine */}
+      <ExpectedVsCurrentBars />
 
       {/* Synchronized Telemetry Parameters */}
       <TelemetryGrid />

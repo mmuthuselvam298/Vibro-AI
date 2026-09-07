@@ -608,6 +608,35 @@ export const useEngineStore = create<EngineState>((set) => ({
 
     const base = scenarioDefinitions[state.scenario].telemetryBase;
 
+    // Environmental offsets for physics baseline
+    let envChtOffset = 0;
+    let envOilTOffset = 0;
+    let envEgtOffset = 0;
+    let envRpmOffset = 0;
+    let envFuelOffset = 0;
+    let envVibExpected = 0.85;
+
+    if (state.missionProfile === 'HOT_WEATHER') {
+      envChtOffset = 16;
+      envOilTOffset = 8;
+      envRpmOffset = -20;
+    } else if (state.missionProfile === 'HIGH_ALTITUDE') {
+      envChtOffset = 6;
+      envEgtOffset = 20;
+      envRpmOffset = 150;
+      envFuelOffset = -1.6;
+    } else if (state.missionProfile === 'RAPID_THROTTLE') {
+      envVibExpected = 1.25; // allows dynamic throttle transient envelope
+    }
+
+    // In healthy state, physical environment impacts observation equally to expected
+    const isHealthy = state.scenario === 'HEALTHY';
+    const obsChtOffset = isHealthy ? envChtOffset : 0;
+    const obsOilTOffset = isHealthy ? envOilTOffset : 0;
+    const obsEgtOffset = isHealthy ? envEgtOffset : 0;
+    const obsRpmOffset = isHealthy ? envRpmOffset : 0;
+    const obsFuelOffset = isHealthy ? envFuelOffset : 0;
+
     // Advance mission time
     const newMissionTime = (state.missionTimeSeconds + (0.05 * state.replaySpeed)) % state.missionTotalDuration;
 
@@ -617,13 +646,41 @@ export const useEngineStore = create<EngineState>((set) => ({
       inferenceLatency: 18 + Math.floor(Math.random() * 6),
       confidence: Math.min(99.9, Math.max(50.0, jitter(state.confidence, 0.4))),
       telemetry: {
-        rpm: { ...state.telemetry.rpm, current: Math.round(jitter(base.rpm.current, 15)) },
-        cht: { ...state.telemetry.cht, current: jitter(base.cht.current, 0.6) },
-        egt: { ...state.telemetry.egt, current: jitter(base.egt.current, 1.8) },
-        oilPressure: { ...state.telemetry.oilPressure, current: jitter(base.oilPressure.current, 0.04) },
-        oilTemp: { ...state.telemetry.oilTemp, current: jitter(base.oilTemp.current, 0.3) },
-        fuelFlow: { ...state.telemetry.fuelFlow, current: jitter(base.fuelFlow.current, 0.15) },
-        vibrationRms: { ...state.telemetry.vibrationRms, current: jitter(base.vibrationRms.current, 0.05) },
+        rpm: {
+          ...state.telemetry.rpm,
+          current: Math.round(jitter(base.rpm.current + obsRpmOffset, 15)),
+          expected: base.rpm.expected + envRpmOffset
+        },
+        cht: {
+          ...state.telemetry.cht,
+          current: jitter(base.cht.current + obsChtOffset, 0.6),
+          expected: base.cht.expected + envChtOffset
+        },
+        egt: {
+          ...state.telemetry.egt,
+          current: jitter(base.egt.current + obsEgtOffset, 1.8),
+          expected: base.egt.expected + envEgtOffset
+        },
+        oilPressure: {
+          ...state.telemetry.oilPressure,
+          current: jitter(base.oilPressure.current, 0.04),
+          expected: base.oilPressure.expected
+        },
+        oilTemp: {
+          ...state.telemetry.oilTemp,
+          current: jitter(base.oilTemp.current + obsOilTOffset, 0.3),
+          expected: base.oilTemp.expected + envOilTOffset
+        },
+        fuelFlow: {
+          ...state.telemetry.fuelFlow,
+          current: jitter(base.fuelFlow.current + obsFuelOffset, 0.15),
+          expected: Number((base.fuelFlow.expected + envFuelOffset).toFixed(1))
+        },
+        vibrationRms: {
+          ...state.telemetry.vibrationRms,
+          current: jitter(base.vibrationRms.current, 0.05),
+          expected: envVibExpected
+        },
         batteryVoltage: { ...state.telemetry.batteryVoltage, current: jitter(base.batteryVoltage.current, 0.08) },
         injectionTiming: { ...state.telemetry.injectionTiming, current: jitter(base.injectionTiming.current, 0.1) },
       }

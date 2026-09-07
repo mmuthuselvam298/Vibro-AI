@@ -15,10 +15,10 @@ export const DemoControls: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const quickPresets: { type: ScenarioType; label: string; shortcut: string }[] = [
-    { type: 'HEALTHY', label: 'Healthy Baseline', shortcut: '1' },
-    { type: 'EARLY_BEARING_WEAR', label: 'Bearing Wear (BPFO)', shortcut: '2' },
-    { type: 'PISTON_SLAP', label: 'Piston Slap', shortcut: '4' },
-    { type: 'LUBRICATION_ISSUE', label: 'Low Oil Pressure', shortcut: '9' },
+    { type: 'HEALTHY', label: '1. Healthy Baseline', shortcut: '1' },
+    { type: 'EARLY_BEARING_WEAR', label: '2. Early Bearing Wear', shortcut: '2' },
+    { type: 'SEVERE_BEARING_WEAR', label: '3. Severe Bearing Wear', shortcut: '3' },
+    { type: 'SENSOR_DRIFT', label: '4. Sensor Drift / Fault', shortcut: '-' },
   ];
 
   useEffect(() => {
