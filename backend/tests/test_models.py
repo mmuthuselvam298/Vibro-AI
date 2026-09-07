@@ -176,8 +176,8 @@ def test_model_relationships_creation(session: Session):
     # 9. Create MaintenanceRecord
     maintenance = MaintenanceRecord(
         engine_id=engine.id,
-        urgency="NEXT_SCHEDULED",
-        prescribed_action="Routine turnaround inspection at 200 cycles.",
+        urgency="NEXT_SCHEDULED_INSPECTION",
+        prescribed_action="Routine turnaround inspection recommended according to authorized technical data.",
         action_type="INSPECTION",
         target_component="BEARING",
     )

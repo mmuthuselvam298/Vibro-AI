@@ -4,7 +4,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import create_db_and_tables
-from .api import engines_router, missions_router, telemetry_router
+from .api import (
+    engines_router,
+    missions_router,
+    telemetry_router,
+    faults_router,
+    maintenance_router,
+)
 
 
 @asynccontextmanager
@@ -49,3 +55,5 @@ def health_check():
 app.include_router(engines_router, prefix="/api")
 app.include_router(missions_router, prefix="/api")
 app.include_router(telemetry_router, prefix="/api")
+app.include_router(faults_router, prefix="/api")
+app.include_router(maintenance_router, prefix="/api")

@@ -19,16 +19,16 @@ class MaintenanceRecord(SQLModel, table=True):
 
     urgency: str = Field(
         default="NONE",
-        description="NONE, NEXT_SCHEDULED, WITHIN_20_CYCLES, IMMEDIATE_GROUND"
+        description="Advisory priority category: IMMEDIATE_REVIEW, PRIORITY_REVIEW, NEXT_SCHEDULED_INSPECTION, INFORMATIONAL, NONE"
     )
-    prescribed_action: str = Field(description="Prescribed engineering / ground crew action")
+    prescribed_action: str = Field(description="Advisory engineering recommendation or ground turnaround action")
     action_type: str = Field(
         default="INSPECTION",
-        description="INSPECTION, REPLACEMENT, RECALIBRATION, OVERHAUL"
+        description="INSPECTION, REPLACEMENT, RECALIBRATION, OVERHAUL, MAINTENANCE"
     )
     target_component: str = Field(
         default="NONE",
-        description="Target LRU / subassembly"
+        description="Target component or subassembly"
     )
     status: str = Field(
         default="OPEN",
