@@ -1,15 +1,31 @@
 import React from 'react';
 import { GuideLink } from '@/components/dashboard/GuideLink';
+import { JargonTooltip } from '@/components/dashboard/JargonTooltip';
+import { useEngineStore } from '@/store/engineStore';
 import { ShieldCheck, Cpu, Database, BookOpen } from 'lucide-react';
 
 export const EvidenceHardwarePage: React.FC = () => {
+  const { plainLanguageMode } = useEngineStore();
+
   return (
     <div className="flex flex-col gap-8 max-w-[1600px] mx-auto animate-in fade-in duration-300 pb-12">
       <div className="flex flex-wrap justify-between items-center border-b-4 border-black pb-2 gap-2">
         <div>
-          <h2 className="text-3xl font-bold uppercase tracking-tight">Evidence, Hardware & SIH Validation</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-bold uppercase tracking-tight">
+              {plainLanguageMode ? 'Sensors & Data Sources' : 'Evidence, Hardware & SIH Validation'}
+            </h2>
+            <JargonTooltip
+              term="Hardware Edge Architecture"
+              explanation="The physical electronics stack mounted inside the UAV — including ADXL355 accelerometers, STM32 DAQ microcontroller, and Raspberry Pi CM4 edge computing processor."
+              analogy="Like the sensors and engine control computer under the hood of a modern sports car."
+              technicalDetails="Dual-core edge compute with CAN bus / SPI isolation running ONNX Runtime inference in < 20 ms."
+            />
+          </div>
           <p className="text-xs font-mono text-gray-600 mt-1">
-            Technical evidence, hardware stack specifications, physics validation references, and honest prototype claims.
+            {plainLanguageMode
+              ? 'Physical sensors, computer edge hardware, and honest prototype testing credentials.'
+              : 'Technical evidence, hardware stack specifications, physics validation references, and honest prototype claims.'}
           </p>
         </div>
         <div className="flex items-center gap-2">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useEngineStore } from '@/store/engineStore';
 import { GuideLink } from '@/components/dashboard/GuideLink';
+import { JargonTooltip } from '@/components/dashboard/JargonTooltip';
 import { ShieldCheck, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -9,7 +10,8 @@ export const SystemStatusPage: React.FC = () => {
     inferenceLatency,
     operatingCycle,
     dataMode,
-    isSimulating
+    isSimulating,
+    plainLanguageMode,
   } = useEngineStore();
 
   const hardwareNodes = [
@@ -55,8 +57,22 @@ export const SystemStatusPage: React.FC = () => {
     <div className="flex flex-col gap-8 max-w-[1400px] mx-auto animate-in fade-in duration-300">
       <div className="flex flex-wrap justify-between items-center border-b-4 border-black pb-2 gap-2">
         <div>
-          <h2 className="text-3xl font-bold uppercase tracking-tight">System Status & Edge Health</h2>
-          <p className="text-xs font-mono text-gray-600 mt-1">Real-time edge telemetry, DAQ buffer synchronization, and benchmark telemetry.</p>
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-bold uppercase tracking-tight">
+              {plainLanguageMode ? 'System Health' : 'System Status & Edge Health'}
+            </h2>
+            <JargonTooltip
+              term="Edge Computer Status"
+              explanation="Measures how fast the on-board computer evaluates sensor data and verifies that telemetry communication buses have zero frame drops."
+              analogy="Like checking the CPU temperature and ping latency on a gaming computer."
+              technicalDetails="Raspberry Pi CM4 target running ONNX Runtime engine. Budget: < 25 ms per cycle to maintain real-time UAV flight readiness."
+            />
+          </div>
+          <p className="text-xs font-mono text-gray-600 mt-1">
+            {plainLanguageMode
+              ? 'Computer processing speed, sensor data throughput, and edge hardware diagnostics.'
+              : 'Real-time edge telemetry, DAQ buffer synchronization, and benchmark telemetry.'}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <span className="neo-badge bg-[var(--color-brand-green)] text-black">

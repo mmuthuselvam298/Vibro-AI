@@ -68,6 +68,15 @@ export interface ScenarioDetail {
   evidencePoints: string[];
 }
 
+export interface EngineEventLog {
+  id: string;
+  time: string;
+  type: 'SCENARIO_CHANGE' | 'ALERT' | 'ACTION' | 'PROFILE_CHANGE';
+  title: string;
+  detail: string;
+  severity: SeverityType;
+}
+
 export interface EngineState {
   scenario: ScenarioType;
   engineHealth: number;
@@ -84,6 +93,15 @@ export interface EngineState {
   maintenanceAction: string;
   maintenanceUrgency: 'NONE' | 'NEXT_SCHEDULED' | 'WITHIN_20_CYCLES' | 'IMMEDIATE_GROUND';
   evidencePoints: string[];
+
+  // Plain-Language Presentation Layer
+  plainLanguageMode: boolean;
+  togglePlainLanguageMode: () => void;
+
+  // Session Event & Alert History
+  eventLog: EngineEventLog[];
+  resetToHealthy: () => void;
+  addEvent: (event: Omit<EngineEventLog, 'id' | 'time'>) => void;
 
   // Telemetry & Residuals
   telemetry: TelemetryState;
@@ -578,17 +596,90 @@ export const useEngineStore = create<EngineState>((set) => ({
   isSimulating: true,
   replaySpeed: 1,
 
-  setScenario: (scenario: ScenarioType) => set(() => {
+  // Plain-Language Presentation State (Default: Simple mode for hackathon judging)
+  plainLanguageMode: true,
+  togglePlainLanguageMode: () => set((state) => ({ plainLanguageMode: !state.plainLanguageMode })),
+
+  // Session Event & Alert History
+  eventLog: [
+    {
+      id: 'evt-init',
+      time: '00:23:40',
+      type: 'SCENARIO_CHANGE',
+      title: 'Engine Boot: Normal Operation',
+      detail: 'Initial healthy reference envelope calibrated. All 9 telemetry channels nominal.',
+      severity: 'NOMINAL',
+    },
+  ],
+
+  addEvent: (event) => set((state) => ({
+    eventLog: [
+      {
+        id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        time: new Date().toTimeString().slice(0, 8),
+        ...event,
+      },
+      ...state.eventLog.slice(0, 24), // Keep last 25 events
+    ]
+  })),
+
+  resetToHealthy: () => set((state) => {
+    const def = scenarioDefinitions.HEALTHY;
+    const newEvent: EngineEventLog = {
+      id: `evt-${Date.now()}`,
+      time: new Date().toTimeString().slice(0, 8),
+      type: 'ACTION',
+      title: 'Quick Reset to Healthy Engine State',
+      detail: 'Operator restored baseline telemetry envelope. Vibration and thermal residuals cleared.',
+      severity: 'NOMINAL',
+    };
+    return {
+      scenario: 'HEALTHY',
+      ...def,
+      telemetry: buildInitialTelemetry('HEALTHY'),
+      eventLog: [newEvent, ...state.eventLog.slice(0, 24)],
+    };
+  }),
+
+  setScenario: (scenario: ScenarioType) => set((state) => {
     const def = scenarioDefinitions[scenario];
+    const newEvent: EngineEventLog = {
+      id: `evt-${Date.now()}`,
+      time: new Date().toTimeString().slice(0, 8),
+      type: 'SCENARIO_CHANGE',
+      title: `Scenario Injected: ${def.faultType}`,
+      detail: def.fusionSummary,
+      severity: def.severity,
+    };
     return {
       scenario,
       ...def,
       telemetry: buildInitialTelemetry(scenario),
       inferenceLatency: 18 + Math.floor(Math.random() * 8),
+      eventLog: [newEvent, ...state.eventLog.slice(0, 24)],
     };
   }),
 
-  setMissionProfile: (missionProfile: MissionProfileType) => set(() => ({ missionProfile })),
+  setMissionProfile: (missionProfile: MissionProfileType) => set((state) => {
+    const profileLabels: Record<MissionProfileType, string> = {
+      ENDURANCE_CRUISE: 'Standard Cruise (ISA 15°C, MSL)',
+      HOT_WEATHER: 'Hot Weather (+45°C Tactical Envelope)',
+      HIGH_ALTITUDE: 'High Altitude (FL150 Thin Air)',
+      RAPID_THROTTLE: 'Rapid Throttle / High-G Maneuvers'
+    };
+    const newEvent: EngineEventLog = {
+      id: `evt-${Date.now()}`,
+      time: new Date().toTimeString().slice(0, 8),
+      type: 'PROFILE_CHANGE',
+      title: `Flight Profile Changed: ${profileLabels[missionProfile]}`,
+      detail: 'Adaptive healthy baseline recalibrated to match environmental thermodynamics.',
+      severity: 'NOMINAL',
+    };
+    return {
+      missionProfile,
+      eventLog: [newEvent, ...state.eventLog.slice(0, 24)],
+    };
+  }),
 
   setDataMode: (dataMode: DataModeType) => set(() => ({ dataMode })),
 

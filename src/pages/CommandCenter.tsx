@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import { HeroMetrics } from '@/components/dashboard/HeroMetrics';
+import { RoiImpactStrip } from '@/components/dashboard/RoiImpactStrip';
 import { ExpectedVsCurrentBars } from '@/components/dashboard/ExpectedVsCurrentBars';
 import { MissionReliabilityPanel } from '@/components/dashboard/MissionReliabilityPanel';
 import { HealthBreakdownCard } from '@/components/dashboard/HealthBreakdownCard';
+import { TraditionalVsVibroCard } from '@/components/dashboard/TraditionalVsVibroCard';
+import { EventHistoryLog } from '@/components/dashboard/EventHistoryLog';
 import { WhatIfSimulatorModal } from '@/components/dashboard/WhatIfSimulatorModal';
 import { SensorFusionCard } from '@/components/dashboard/SensorFusionCard';
 import { TelemetryGrid } from '@/components/dashboard/TelemetryGrid';
@@ -38,7 +41,10 @@ export const CommandCenter: React.FC = () => {
       <AlertBanner />
       <HeroMetrics />
 
-      {/* 2. PROMINENT CORE SECTION: EXPECTED HEALTHY STATE VS CURRENT LIVE ENGINE */}
+      {/* 2. PROGNOSIS VALUE & IMPACT STRIP */}
+      <RoiImpactStrip />
+
+      {/* 3. PROMINENT CORE SECTION: EXPECTED HEALTHY STATE VS CURRENT LIVE ENGINE */}
       <ExpectedVsCurrentBars />
 
       {/* 3. Module Navigation Tabs & Quick Actions */}
@@ -96,11 +102,17 @@ export const CommandCenter: React.FC = () => {
             <SensorFusionCard />
           </div>
 
-          {/* Actionable Engineering Advisory & Mission Scrubber */}
+          {/* Technology Comparison: Traditional Alarms vs Vibro-AI Predictive Baseline */}
+          <TraditionalVsVibroCard />
+
+          {/* Actionable Advisory & Real-Time Event Audit Log */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MaintenanceAdvisoryPanel />
-            <MissionReplayWidget />
+            <EventHistoryLog />
           </div>
+
+          {/* Mission Scrubber / Historical Playback */}
+          <MissionReplayWidget />
         </div>
       )}
 
@@ -118,10 +130,16 @@ export const CommandCenter: React.FC = () => {
           <DiagnosisPanel />
           <PhysicsResidualPanel />
           <div className="lg:col-span-2">
+            <TraditionalVsVibroCard />
+          </div>
+          <div className="lg:col-span-2">
             <HealthBreakdownCard />
           </div>
           <div className="lg:col-span-2">
             <MaintenanceAdvisoryPanel />
+          </div>
+          <div className="lg:col-span-2">
+            <EventHistoryLog />
           </div>
         </div>
       )}
@@ -163,7 +181,12 @@ export const CommandCenter: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <PhysicsResidualPanel />
+            <TraditionalVsVibroCard />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <MaintenanceAdvisoryPanel />
+            <EventHistoryLog />
           </div>
 
           <MissionReplayWidget />

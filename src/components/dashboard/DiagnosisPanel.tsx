@@ -8,7 +8,7 @@ import { Target, CheckCircle2, AlertTriangle, HelpCircle, ShieldCheck, ShieldAle
 import { cn } from '@/lib/utils';
 
 export const DiagnosisPanel: React.FC = () => {
-  const { faultType, confidence, evidencePoints, telemetry, missionProfile } = useEngineStore();
+  const { faultType, confidence, evidencePoints, telemetry, missionProfile, plainLanguageMode } = useEngineStore();
   const { timeFeatures, spectralFeatures } = useSignalStore();
 
   // Compute adaptive baseline and evaluate genuine anomaly & evidence fusion
@@ -71,15 +71,22 @@ export const DiagnosisPanel: React.FC = () => {
       <div className="flex flex-wrap justify-between items-center mb-3 border-b-2 border-black pb-2 gap-2">
         <div className="flex items-center gap-2">
           <Target size={18} className="stroke-[2.5]" />
-          <h3 className="font-extrabold text-base uppercase tracking-tight">
-            Multi-Parameter Anomaly Engine
-          </h3>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-extrabold text-base uppercase tracking-tight">
+                {plainLanguageMode ? "What's Wrong & Why" : "Multi-Parameter Anomaly Engine"}
+              </h3>
+              <GuideLink sectionId="07-ai-fault-diagnosis" label="AI" />
+            </div>
+            <span className="text-[10px] font-mono text-neutral-500 font-bold block">
+              {plainLanguageMode ? 'AI Pattern Recognition & Sensor Evidence Fusion' : 'Bayesian Evidence Fusion & Spectral Classifier'}
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-mono font-bold px-2 py-0.5 border border-black bg-neutral-100">
             EVIDENCE FUSION
           </span>
-          <GuideLink sectionId="07-ai-fault-diagnosis" label="AI Architecture" />
         </div>
       </div>
 

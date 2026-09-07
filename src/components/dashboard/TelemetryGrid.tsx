@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useEngineStore, type TelemetryParam } from '@/store/engineStore';
 import { GuideLink } from './GuideLink';
+import { JargonTooltip } from './JargonTooltip';
 import { cn } from '@/lib/utils';
 import {
   Gauge,
@@ -17,8 +18,56 @@ import {
   AlertOctagon
 } from 'lucide-react';
 
+const SENSOR_EXPLANATIONS: Record<string, { plainName: string; plainDesc: string; analogy: string }> = {
+  rpm: {
+    plainName: 'Engine Shaft Speed',
+    plainDesc: 'How fast the crankshaft is spinning. Drop in RPM under power flags mechanical drag.',
+    analogy: 'The tachometer on a car dashboard.',
+  },
+  cht: {
+    plainName: 'Cylinder Wall Heat',
+    plainDesc: 'Temperature of cylinder walls. Overheating causes piston rings to expand and bind.',
+    analogy: 'Taking the engine cylinder’s direct body temperature.',
+  },
+  egt: {
+    plainName: 'Exhaust Gas Heat',
+    plainDesc: 'Heat of burning gases exiting exhaust. Detects lean fuel burns or incomplete ignition.',
+    analogy: 'Like holding your hand near an exhaust pipe to feel how cleanly fuel is burning.',
+  },
+  oilPressure: {
+    plainName: 'Engine Oil Pressure',
+    plainDesc: 'Hydraulic force pushing oil into bearings. If this drops, metal grinds directly on metal.',
+    analogy: 'Blood pressure in arteries — if it crashes, vital parts starve immediately.',
+  },
+  oilTemp: {
+    plainName: 'Oil Sump Temperature',
+    plainDesc: 'Oil heat inside the reservoir. Excess heat thins oil so it can no longer cushion bearings.',
+    analogy: 'Cooking oil overheating in a pan and losing its thickness.',
+  },
+  fuelFlow: {
+    plainName: 'Fuel Burn Rate',
+    plainDesc: 'Hourly fuel consumption rate. Spikes or drops flag injector clogging or leaks.',
+    analogy: 'How fast gasoline is draining from the tank every hour.',
+  },
+  vibrationRms: {
+    plainName: 'Total Vibration Energy',
+    plainDesc: 'Overall mechanical shaking intensity. First metric to rise during bearing or rotor damage.',
+    analogy: 'How hard a phone is buzzing on a wooden table.',
+  },
+  batteryVoltage: {
+    plainName: 'Electrical Bus Voltage',
+    plainDesc: 'Voltage powering ignition coils and sensor telemetry transmitters.',
+    analogy: 'Car battery charge level keeping the spark plugs firing.',
+  },
+  injectionTiming: {
+    plainName: 'Fuel Injection Angle',
+    plainDesc: 'Exact crank angle when fuel spray triggers before Top Dead Center.',
+    analogy: 'Timing a swing perfectly just as the ball crosses home plate.',
+  },
+};
+
 export const TelemetryGrid: React.FC = () => {
-  const { telemetry, dataMode } = useEngineStore();
+  const { telemetry, dataMode, plainLanguageMode } = useEngineStore();
   const [filter, setFilter] = useState<'ALL' | 'ANOMALIES' | 'THERMAL' | 'MECHANICAL'>('ALL');
 
   const getParamIcon = (key: string) => {
@@ -79,6 +128,11 @@ export const TelemetryGrid: React.FC = () => {
 
     const rangeSpan = (param.nominalMax - param.nominalMin) || 1;
     const percentInRange = Math.max(0, Math.min(100, ((param.current - param.nominalMin) / rangeSpan) * 100));
+    const explanation = SENSOR_EXPLANATIONS[key] || {
+      plainName: param.label,
+      plainDesc: param.role,
+      analogy: 'Telemetry channel',
+    };
 
     return (
       <div
@@ -92,10 +146,20 @@ export const TelemetryGrid: React.FC = () => {
               {getParamIcon(key)}
             </div>
             <div className="min-w-0">
-              <div className="font-extrabold text-xs uppercase leading-snug tracking-tight text-neutral-900 truncate" title={param.label}>
-                {param.label}
+              <div className="flex items-center gap-1">
+                <div className="font-extrabold text-xs uppercase leading-snug tracking-tight text-neutral-900 truncate" title={param.label}>
+                  {plainLanguageMode ? explanation.plainName : param.label}
+                </div>
+                <JargonTooltip
+                  term={param.label}
+                  explanation={explanation.plainDesc}
+                  analogy={explanation.analogy}
+                  technicalDetails={`Nominal: ${param.nominalMin} to ${param.nominalMax} ${param.unit}. Physics Expected: ${param.expected} ${param.unit}.`}
+                />
               </div>
-              <div className="text-[10px] text-gray-500 font-mono truncate">{param.role}</div>
+              <div className="text-[10px] text-gray-500 font-mono truncate">
+                {plainLanguageMode ? `${param.label} (${param.unit})` : param.role}
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-1 shrink-0">
@@ -152,9 +216,22 @@ export const TelemetryGrid: React.FC = () => {
       {/* Telemetry Header with Category Filter */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-black pb-2">
         <div className="flex items-center gap-2">
-          <h3 className="font-extrabold text-base uppercase tracking-tight">
-            Multi-Parameter Sensor Telemetry
-          </h3>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-extrabold text-base uppercase tracking-tight">
+                {plainLanguageMode ? 'Live Engine Readings (9 Sensors)' : 'Multi-Parameter Sensor Telemetry'}
+              </h3>
+              <JargonTooltip
+                term="9-Channel Telemetry Stream"
+                explanation="Continuous real-time measurements from RPM, temperature, pressure, and vibration sensors across the engine."
+                analogy="Like the vital-sign monitor in an intensive care unit tracking pulse, blood pressure, oxygen, and temperature simultaneously."
+                technicalDetails="Synchronous sampling at 100 Hz (vibration at 1000 Hz) via SPI/I2C/CAN bus. Cross-checked against physical nominal bands."
+              />
+            </div>
+            <span className="text-[10px] font-mono text-neutral-500 font-bold block">
+              {plainLanguageMode ? 'Real-time readings compared with expected healthy baseline' : 'Synchronous Multi-Rate Telemetry Bus'}
+            </span>
+          </div>
           <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 border border-black bg-[var(--color-brand-light)]">
             9 CHANNELS
           </span>

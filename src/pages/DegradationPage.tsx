@@ -4,10 +4,11 @@ import { MissionReliabilityPanel } from '@/components/dashboard/MissionReliabili
 import { MissionReplayWidget } from '@/components/dashboard/MissionReplayWidget';
 import { useEngineStore } from '@/store/engineStore';
 import { GuideLink } from '@/components/dashboard/GuideLink';
+import { JargonTooltip } from '@/components/dashboard/JargonTooltip';
 import { ShieldAlert, Compass } from 'lucide-react';
 
 export const DegradationPage: React.FC = () => {
-  const { engineHealth, rul, degradationRate, missionProfile } = useEngineStore();
+  const { engineHealth, rul, degradationRate, missionProfile, plainLanguageMode } = useEngineStore();
 
   const profileProjections = [
     { profile: 'Endurance Cruise (10k ft)', rate: '0.12% / 100c', stress: 'Baseline Nominal', expectedRul: '185 Cycles (~83 Flight Hrs)' },
@@ -20,14 +21,26 @@ export const DegradationPage: React.FC = () => {
     <div className="flex flex-col gap-6 max-w-[1600px] mx-auto animate-in fade-in duration-300 pb-12">
       <div className="flex flex-wrap justify-between items-center border-b-4 border-black pb-2 gap-2">
         <div>
-          <h2 className="text-3xl font-bold uppercase tracking-tight">Degradation & RUL Modeling</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-bold uppercase tracking-tight">
+              {plainLanguageMode ? 'Health Over Time' : 'Degradation & RUL Modeling'}
+            </h2>
+            <JargonTooltip
+              term="Degradation & RUL Modeling"
+              explanation="Tracks physical engine wear accumulation over flight cycles and projects the exact curve forward to predict how many hours remain before critical maintenance is required."
+              analogy="Like monitoring brake pad thickness during each oil change and forecasting exactly how many miles are left before the metal backing touches the rotor."
+              technicalDetails="Combines Paris' law mechanical fatigue with Arrhenius thermal acceleration equations to estimate Remaining Useful Life (RUL)."
+            />
+          </div>
           <p className="text-xs font-mono text-gray-600 mt-1">
-            Dynamic Remaining Useful Life (RUL) estimation with Weibull hazard rate decay and mission profile impact simulation.
+            {plainLanguageMode
+              ? 'Predicts how fast the engine is wearing out and how much flight time remains before maintenance is needed.'
+              : 'Dynamic Remaining Useful Life (RUL) estimation with Weibull hazard rate decay and mission profile impact simulation.'}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span className="neo-badge bg-[var(--color-brand-blue)] text-white">
-            PROGNOSTIC CONFIDENCE: 95%
+            TARGET 90% CONFIDENCE INTERVAL
           </span>
           <GuideLink sectionId="10-rul" label="RUL Formulation" />
         </div>
@@ -43,8 +56,12 @@ export const DegradationPage: React.FC = () => {
         <div className="neo-card bg-[var(--color-brand-blue)] text-white flex flex-col justify-between p-6">
           <div className="flex justify-between items-start border-b-2 border-white/30 pb-3 mb-4">
             <div>
-              <span className="font-bold text-lg uppercase block">Prognostic State</span>
-              <span className="text-[10px] font-mono text-gray-300">WEIBULL / EXPONENTIAL</span>
+              <span className="font-bold text-lg uppercase block">
+                {plainLanguageMode ? 'Time Left Summary' : 'Prognostic State'}
+              </span>
+              <span className="text-[10px] font-mono text-gray-300">
+                {plainLanguageMode ? 'Physical Fatigue & Thermal Curve' : 'WEIBULL / EXPONENTIAL'}
+              </span>
             </div>
             <ShieldAlert size={24} className="text-[var(--color-brand-yellow)]" />
           </div>
@@ -58,14 +75,18 @@ export const DegradationPage: React.FC = () => {
             </div>
 
             <div className="p-3 bg-white/10 border-2 border-white/40">
-              <span className="text-[10px] text-gray-300 block uppercase">Current Degradation Rate</span>
+              <span className="text-[10px] text-gray-300 block uppercase">
+                {plainLanguageMode ? 'Engine Wear Rate' : 'Current Degradation Rate'}
+              </span>
               <div className="text-2xl font-bold tracking-tight">
                 {degradationRate.toFixed(2)}% <span className="text-xs text-gray-300 font-normal">/ 100 cycles</span>
               </div>
             </div>
 
             <div className="p-3 bg-white/10 border-2 border-white/40">
-              <span className="text-[10px] text-gray-300 block uppercase">Projected RUL Horizon</span>
+              <span className="text-[10px] text-gray-300 block uppercase">
+                {plainLanguageMode ? 'Safe Flight Time Remaining' : 'Projected RUL Horizon'}
+              </span>
               <div className="text-3xl font-bold tracking-tight text-white">
                 {rul} <span className="text-base font-normal text-gray-300">Cycles (~{(rul * 0.45).toFixed(0)} hrs)</span>
               </div>

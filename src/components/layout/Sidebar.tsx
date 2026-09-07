@@ -24,6 +24,7 @@ interface NavGroup {
   items: {
     icon: React.ReactNode;
     label: string;
+    subLabel: string;
     path: string;
     badge?: string;
   }[];
@@ -34,24 +35,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
     {
       groupName: 'OPERATIONS',
       items: [
-        { icon: <Activity size={20} />, label: 'Command Center', path: '/command-center' },
-        { icon: <BarChart2 size={20} />, label: 'Signal Analysis', path: '/signal-analysis' },
-        { icon: <AlertTriangle size={20} />, label: 'Fault Diagnosis', path: '/fault-diagnosis' },
-        { icon: <Cpu size={20} />, label: 'Digital Twin', path: '/digital-twin' },
-        { icon: <Database size={20} />, label: 'Degradation & RUL', path: '/degradation-rul' },
+        { icon: <Activity size={20} />, label: 'Command Center', subLabel: 'Live Overview', path: '/command-center' },
+        { icon: <BarChart2 size={20} />, label: 'Vibration Deep-Dive', subLabel: 'Signal Analysis', path: '/signal-analysis' },
+        { icon: <AlertTriangle size={20} />, label: "What's Wrong & Why", subLabel: 'AI Fault Diagnosis', path: '/fault-diagnosis' },
+        { icon: <Cpu size={20} />, label: 'Engine Map', subLabel: 'Interactive Digital Twin', path: '/digital-twin' },
+        { icon: <Database size={20} />, label: 'Health Over Time', subLabel: 'Degradation & RUL', path: '/degradation-rul' },
       ]
     },
     {
       groupName: 'SYSTEM',
       items: [
-        { icon: <ShieldCheck size={20} />, label: 'Evidence & Hardware', path: '/evidence-hardware' },
-        { icon: <Server size={20} />, label: 'System Status', path: '/system-status' },
+        { icon: <ShieldCheck size={20} />, label: 'Sensors & Hardware', subLabel: 'Evidence & Inputs', path: '/evidence-hardware' },
+        { icon: <Server size={20} />, label: 'System Health', subLabel: 'Compute & Latency', path: '/system-status' },
       ]
     },
     {
       groupName: 'LEARN',
       items: [
-        { icon: <BookOpen size={20} />, label: 'System Guide', path: '/system-guide', badge: '14 CH' },
+        { icon: <BookOpen size={20} />, label: 'Full System Guide', subLabel: '14-Chapter Reference', path: '/system-guide', badge: '14 CH' },
       ]
     }
   ];
@@ -107,11 +108,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
                     </span>
                     {isOpen && (
                       <div className="ml-3 flex-1 flex justify-between items-center whitespace-nowrap overflow-hidden">
-                        <span className="text-xs group-hover:translate-x-0.5 transition-transform truncate">
-                          {item.label}
-                        </span>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-xs group-hover:translate-x-0.5 transition-transform truncate leading-tight">
+                            {item.label}
+                          </span>
+                          <span className="text-[9px] font-mono text-neutral-500 font-normal truncate leading-none mt-0.5">
+                            {item.subLabel}
+                          </span>
+                        </div>
                         {item.badge && (
-                          <span className="text-[9px] font-mono px-1 py-0.2 border border-black bg-[var(--color-brand-yellow)] text-black font-bold">
+                          <span className="text-[9px] font-mono px-1 py-0.2 border border-black bg-[var(--color-brand-yellow)] text-black font-bold shrink-0 ml-1">
                             {item.badge}
                           </span>
                         )}

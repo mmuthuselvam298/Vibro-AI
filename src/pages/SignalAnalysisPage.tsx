@@ -4,21 +4,34 @@ import { SignalAnalysis } from '@/components/dashboard/SignalAnalysis';
 import { useSignalStore } from '@/store/signalStore';
 import { useEngineStore } from '@/store/engineStore';
 import { GuideLink } from '@/components/dashboard/GuideLink';
+import { JargonTooltip } from '@/components/dashboard/JargonTooltip';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { Zap, Activity, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const SignalAnalysisPage: React.FC = () => {
   const { spectrogram, wpdBands } = useSignalStore();
-  const { scenario } = useEngineStore();
+  const { scenario, plainLanguageMode } = useEngineStore();
 
   return (
     <div className="flex flex-col gap-6 max-w-[1600px] mx-auto animate-in fade-in duration-300 pb-12">
       <div className="flex flex-wrap justify-between items-center border-b-4 border-black pb-2 gap-2">
         <div>
-          <h2 className="text-3xl font-bold uppercase tracking-tight">Signal Analysis & Advanced DSP</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-bold uppercase tracking-tight">
+              {plainLanguageMode ? 'Vibration Deep-Dive' : 'Signal Analysis & Advanced DSP'}
+            </h2>
+            <JargonTooltip
+              term="Vibration Signal Processing"
+              explanation="Deconstructs raw engine vibration signals into individual frequencies and time-slices so we can identify damaged bearings, misfiring cylinders, or loose valves before the pilot hears anything abnormal."
+              analogy="Like taking an audio recording of a crowded room and digitally isolating the voice of one specific person."
+              technicalDetails="Triaxial ADXL355 sampled at 1.0 kHz. Processed through Hanning-windowed FFT, STFT short-time matrix, and 3-level Wavelet Packet Decomposition (WPD)."
+            />
+          </div>
           <p className="text-xs font-mono text-gray-600 mt-1">
-            Triaxial vibration conditioning, Fast Fourier Transform, Short-Time Fourier Spectrogram, and Wavelet Decomposition.
+            {plainLanguageMode
+              ? 'Examine how the engine is shaking: live time waves, frequency harmonics (FFT), and energy distribution.'
+              : 'Triaxial vibration conditioning, Fast Fourier Transform, Short-Time Fourier Spectrogram, and Wavelet Decomposition.'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -43,15 +56,26 @@ export const SignalAnalysisPage: React.FC = () => {
           <div className="flex justify-between items-center mb-3 border-b-4 border-black pb-2">
             <div className="flex items-center gap-2">
               <Zap size={20} />
-              <h3 className="font-bold text-xl uppercase">STFT Spectrogram Matrix</h3>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-bold text-xl uppercase">
+                    {plainLanguageMode ? 'Frequencies Over Time (STFT Matrix)' : 'STFT Spectrogram Matrix'}
+                  </h3>
+                  <JargonTooltip
+                    term="STFT Spectrogram"
+                    explanation="Shows how vibration frequencies change second-by-second during flight, revealing intermittent knocking or vibration surges."
+                    analogy="Like sheet music showing which musical notes are played at each second of a song."
+                    technicalDetails="Discrete Fourier transform computed across 1.0s sliding time windows with 50% overlap."
+                  />
+                </div>
+                <span className="text-[10px] font-mono text-gray-500 font-bold block">
+                  {plainLanguageMode ? 'Time-frequency energy density across 1.0s sliding windows' : 'Sliding-Window Fourier Power Spectrum'}
+                </span>
+              </div>
             </div>
-            <span className="text-xs font-mono font-bold px-2 py-0.5 border border-black bg-gray-100">
+            <span className="text-xs font-mono font-bold px-2 py-0.5 border border-black bg-gray-100 shrink-0">
               TIME-FREQUENCY
             </span>
-          </div>
-
-          <div className="text-xs font-mono text-gray-500 mb-2">
-            Time-frequency energy density matrix across 1.0s sliding windows:
           </div>
 
           <div className="flex-1 overflow-x-auto">
@@ -95,7 +119,22 @@ export const SignalAnalysisPage: React.FC = () => {
           <div className="flex justify-between items-center mb-3 border-b-4 border-black pb-2">
             <div className="flex items-center gap-2">
               <Activity size={20} />
-              <h3 className="font-bold text-xl uppercase">Wavelet Sub-Band Energy (WPD)</h3>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-bold text-xl uppercase">
+                    {plainLanguageMode ? 'Vibration Energy by Frequency Zone' : 'Wavelet Sub-Band Energy (WPD)'}
+                  </h3>
+                  <JargonTooltip
+                    term="Wavelet Packet Decomposition (WPD)"
+                    explanation="Divides the full vibration sound into 8 narrow frequency zones. When metal balls inside a bearing chip, energy surges in one specific zone while the rest stay quiet."
+                    analogy="Like splitting light through a prism to see if just the red or blue band is glowing unusually bright."
+                    technicalDetails="Daubechies 4 (db4) mother wavelet decomposed into 8 orthogonal frequency bins (0–500 Hz)."
+                  />
+                </div>
+                <span className="text-[10px] font-mono text-gray-500 font-bold block">
+                  {plainLanguageMode ? 'Wavelet Decomposition (WPD) • Isolates subtle bearing ball defects' : 'Daubechies 4 (db4) 3-Level Packet Energy'}
+                </span>
+              </div>
             </div>
             <GuideLink sectionId="06-signal-processing" label="WPD Theory" />
           </div>

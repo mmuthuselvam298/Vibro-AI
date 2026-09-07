@@ -2,7 +2,8 @@ import React from 'react';
 import { useEngineStore } from '@/store/engineStore';
 import { computeTrendRUL, computeMissionReliability } from '@/lib/prognosticsEngine';
 import { GuideLink } from './GuideLink';
-import { Compass, Activity, Sparkles } from 'lucide-react';
+import { JargonTooltip } from './JargonTooltip';
+import { Compass, Sparkles, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MissionReliabilityPanelProps {
@@ -16,6 +17,7 @@ export const MissionReliabilityPanel: React.FC<MissionReliabilityPanelProps> = (
     severity,
     missionTimeSeconds,
     missionTotalDuration,
+    plainLanguageMode,
   } = useEngineStore();
 
   const rulResult = React.useMemo(() => {
@@ -51,11 +53,19 @@ export const MissionReliabilityPanel: React.FC<MissionReliabilityPanelProps> = (
         <div className="flex items-center gap-2">
           <Compass size={22} className="stroke-[2.5]" />
           <div>
-            <h3 className="font-extrabold text-lg uppercase tracking-tight leading-none">
-              Mission Reliability Engine
-            </h3>
-            <span className="text-[10px] font-mono text-gray-500 uppercase">
-              SIH26054 OPERATIONAL READINESS & DECISION SUPPORT
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-extrabold text-lg uppercase tracking-tight leading-none">
+                {plainLanguageMode ? 'Can This Engine Finish The Mission? (Mission GO / NO-GO)' : 'Mission Reliability Engine'}
+              </h3>
+              <JargonTooltip
+                term="Mission GO / NO-GO Determination"
+                explanation="Compares remaining flight duration against predicted engine safe operation hours before failure. Answers: 'Can we launch this UAV without engine seizure mid-flight?'"
+                analogy="Like checking if your car has enough fuel and oil to make a 300 km highway trip without breaking down in the desert."
+                technicalDetails="Reliability Score = P(Engine Survival > T_mission). Calculated from Weibull cumulative distribution & RUL safety margins."
+              />
+            </div>
+            <span className="text-[10px] font-mono text-gray-500 uppercase font-bold block mt-0.5">
+              {plainLanguageMode ? 'Compares required flight time against safe engine operating margin' : 'SIH26054 Operational Readiness & Decision Support'}
             </span>
           </div>
         </div>
@@ -85,14 +95,16 @@ export const MissionReliabilityPanel: React.FC<MissionReliabilityPanelProps> = (
         )}>
           <div className="flex justify-between items-start">
             <span className="text-xs font-mono font-bold uppercase text-gray-700">
-              MISSION RELIABILITY SCORE
+              {plainLanguageMode ? 'MISSION READINESS RATING' : 'MISSION RELIABILITY SCORE'}
             </span>
             <span className={cn(
               "text-[10px] font-mono font-extrabold px-2 py-0.5 border border-black uppercase",
               isCapable ? "bg-[var(--color-brand-green)] text-black" :
               isWatch ? "bg-[var(--color-brand-yellow)] text-black" : "bg-[var(--color-brand-red)] text-white"
             )}>
-              {status.replace(/_/g, ' ')}
+              {plainLanguageMode
+                ? (isCapable ? '✓ MISSION GO' : isWatch ? '⚠️ CAUTION / WATCH' : '⛔ NO-GO / ABORT')
+                : status.replace(/_/g, ' ')}
             </span>
           </div>
 

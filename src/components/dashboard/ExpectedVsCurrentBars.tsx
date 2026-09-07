@@ -2,6 +2,7 @@ import React from 'react';
 import { useEngineStore } from '@/store/engineStore';
 import { computeAdaptiveBaseline, type BaselineParamResult, type DeviationStatus } from '@/lib/physicsBaseline';
 import { GuideLink } from './GuideLink';
+import { JargonTooltip } from './JargonTooltip';
 import { ArrowUpRight, ArrowDownRight, Minus, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +11,6 @@ export const ExpectedVsCurrentBars: React.FC = () => {
     telemetry,
     missionProfile,
     setMissionProfile,
-    operatingCycle,
   } = useEngineStore();
 
   // Compute live adaptive baseline and residuals dynamically
@@ -27,7 +27,7 @@ export const ExpectedVsCurrentBars: React.FC = () => {
       },
       missionProfile
     );
-  }, [telemetry, missionProfile, operatingCycle]);
+  }, [telemetry, missionProfile]);
 
   const { overallDeviationScore, overallStatus, parameters, environmentalOffsets } = baselineResult;
 
@@ -167,6 +167,17 @@ export const ExpectedVsCurrentBars: React.FC = () => {
           const isPos = param.deviationPercent > 0;
           const isZero = param.deviationPercent === 0;
 
+          const getPlainSubtitle = (label: string) => {
+            if (label.includes('Vibration')) return 'How much the engine is shaking — catches mechanical knocks early';
+            if (label.includes('RPM')) return 'How fast the shaft is spinning — steady governor speed check';
+            if (label.includes('Pressure')) return 'Oil lubrication pressure — protects bearings from metal rubbing';
+            if (label.includes('Oil Sump')) return 'Oil heat — rises when journal friction increases';
+            if (label.includes('Cylinder Head')) return 'Cylinder temperature — reveals cooling or overheating stress';
+            if (label.includes('Exhaust')) return 'Exhaust heat — reveals fuel combustion or injector issues';
+            if (label.includes('Fuel')) return 'Fuel burn rate — catches injector clogging and excess drag';
+            return param.physicsContext;
+          };
+
           return (
             <div
               key={param.label}
@@ -179,11 +190,18 @@ export const ExpectedVsCurrentBars: React.FC = () => {
               {/* Header: Label + Status Pill */}
               <div className="flex items-start justify-between gap-2 border-b border-gray-200 pb-1.5">
                 <div>
-                  <div className="font-extrabold text-sm uppercase tracking-tight text-black">
-                    {param.label}
+                  <div className="flex items-center gap-1">
+                    <span className="font-extrabold text-sm uppercase tracking-tight text-black">
+                      {param.label}
+                    </span>
+                    <JargonTooltip
+                      term={param.label}
+                      explanation={getPlainSubtitle(param.label)}
+                      technicalDetails={param.physicsContext}
+                    />
                   </div>
-                  <div className="text-[10px] font-mono text-gray-500 leading-tight">
-                    {param.physicsContext}
+                  <div className="text-[10px] font-mono text-neutral-600 leading-tight mt-0.5">
+                    {getPlainSubtitle(param.label)}
                   </div>
                 </div>
                 <span className={cn(

@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import { useEngineStore } from '@/store/engineStore';
 import { GuideLink } from './GuideLink';
+import { JargonTooltip } from './JargonTooltip';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine, Tooltip } from 'recharts';
 
 export const DegradationChart: React.FC = () => {
-  const { engineHealth, rul, scenario, degradationRate } = useEngineStore();
+  const { engineHealth, rul, scenario, degradationRate, plainLanguageMode } = useEngineStore();
 
   const data = useMemo(() => {
     const pts = [];
@@ -58,8 +59,23 @@ export const DegradationChart: React.FC = () => {
     <div className="neo-card h-full flex flex-col bg-white">
       <div className="flex flex-wrap justify-between items-center mb-3 border-b-2 border-black pb-2 gap-2">
         <div className="flex items-center gap-2">
-          <h3 className="font-extrabold text-base uppercase tracking-tight">Health Trajectory & RUL</h3>
-          <span className="bg-[var(--color-brand-red)] text-white px-1.5 py-0.5 border border-black font-bold text-[10px]">
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-extrabold text-base uppercase tracking-tight">
+                {plainLanguageMode ? 'Time Left Before Maintenance Is Needed' : 'Health Trajectory & RUL'}
+              </h3>
+              <JargonTooltip
+                term="Remaining Useful Life (RUL)"
+                explanation="How many operational flight cycles the engine can safely run before health drops to the critical 40% maintenance threshold."
+                analogy="Like the 'distance to empty' estimate on your car dashboard, but forecasting mechanical wear and tear rather than fuel."
+                technicalDetails="Derived using Paris' Law crack growth rate + Arrhenius thermal fatigue acceleration models. Evaluated with 90% confidence envelope."
+              />
+            </div>
+            <span className="text-[10px] font-mono text-neutral-500 font-bold block">
+              {plainLanguageMode ? 'Simulated Remaining Useful Life (RUL) • Maintenance threshold at 40%' : 'Weibull Hazard Rate & Degradation Vector'}
+            </span>
+          </div>
+          <span className="bg-[var(--color-brand-red)] text-white px-1.5 py-0.5 border border-black font-bold text-[10px] shrink-0">
             FAIL LIMIT: 40%
           </span>
         </div>

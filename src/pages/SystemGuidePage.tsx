@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useEngineStore } from '@/store/engineStore';
 import {
   BookOpen,
   Search,
@@ -18,6 +19,7 @@ import { cn } from '@/lib/utils';
 
 export const SystemGuidePage: React.FC = () => {
   const location = useLocation();
+  const { plainLanguageMode } = useEngineStore();
   const [activeSection, setActiveSection] = useState('01-overview');
   const [glossarySearch, setGlossarySearch] = useState('');
 
@@ -85,10 +87,12 @@ export const SystemGuidePage: React.FC = () => {
             <BookOpen size={16} /> SIH26054 Prototype Knowledge Engine
           </div>
           <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-tight">
-            Vibro-AI Interactive Technical Guide
+            {plainLanguageMode ? 'Full Guide (14-Chapter Reference & Glossary)' : 'Vibro-AI Interactive Technical Guide'}
           </h1>
           <p className="text-gray-300 text-sm font-mono mt-1 max-w-2xl">
-            A comprehensive reference for multi-parameter sensor fusion, signal processing, AI diagnostics, physics residual modeling, and edge hardware architecture.
+            {plainLanguageMode
+              ? 'Plain-language explanations, physics formulas, and searchable technical glossary for every concept, sensor, and model in Vibro-AI.'
+              : 'A comprehensive reference for multi-parameter sensor fusion, signal processing, AI diagnostics, physics residual modeling, and edge hardware architecture.'}
           </p>
         </div>
         <div className="p-3 bg-black/40 border-2 border-[var(--color-brand-yellow)] text-xs font-mono text-right shrink-0">

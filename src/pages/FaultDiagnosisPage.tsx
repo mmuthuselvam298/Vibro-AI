@@ -4,16 +4,32 @@ import { ExpectedVsCurrentBars } from '@/components/dashboard/ExpectedVsCurrentB
 import { MaintenanceAdvisoryPanel } from '@/components/dashboard/MaintenanceAdvisoryPanel';
 import { SensorFusionCard } from '@/components/dashboard/SensorFusionCard';
 import { GuideLink } from '@/components/dashboard/GuideLink';
+import { JargonTooltip } from '@/components/dashboard/JargonTooltip';
+import { useEngineStore } from '@/store/engineStore';
 import { Cpu, Target } from 'lucide-react';
 
 export const FaultDiagnosisPage: React.FC = () => {
+  const { plainLanguageMode } = useEngineStore();
+
   return (
     <div className="flex flex-col gap-6 max-w-[1600px] mx-auto animate-in fade-in duration-300 pb-12">
       <div className="flex flex-wrap justify-between items-center border-b-4 border-black pb-2 gap-2">
         <div>
-          <h2 className="text-3xl font-bold uppercase tracking-tight">AI Inference & Diagnostics</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-bold uppercase tracking-tight">
+              {plainLanguageMode ? "What's Wrong & Why" : "AI Inference & Diagnostics"}
+            </h2>
+            <JargonTooltip
+              term="AI Fault Diagnosis Engine"
+              explanation="Combines deep learning pattern recognition with aeronautical physics equations to diagnose exactly which component has started failing, without waiting for catastrophic engine breakdown."
+              analogy="Like a specialist doctor looking at an X-ray and MRI simultaneously to diagnose a hairline fracture before a bone snaps."
+              technicalDetails="Trained on 12 distinct UAV mechanical & thermodynamic fault profiles. Fuses high-rate vibration with slow thermodynamic channels to isolate sensor drift from genuine faults."
+            />
+          </div>
           <p className="text-xs font-mono text-gray-600 mt-1">
-            Hybrid 1D-CNN / LSTM deep classification model with multi-parameter sensor fusion and explainable evidence validation.
+            {plainLanguageMode
+              ? "What's Wrong & Why: identifies the exact mechanical fault and explains which sensors provided the evidence."
+              : 'Hybrid 1D-CNN / LSTM deep classification model with multi-parameter sensor fusion and explainable evidence validation.'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -42,10 +58,16 @@ export const FaultDiagnosisPage: React.FC = () => {
         {/* Neural Network Layer Pipeline */}
         <div className="neo-card flex flex-col justify-between bg-[var(--color-brand-blue)] text-white p-6">
           <div className="flex justify-between items-center border-b-2 border-white/40 pb-2 mb-4">
-            <h3 className="font-bold text-xl uppercase text-white flex items-center gap-2">
-              <Cpu size={22} className="text-[var(--color-brand-yellow)]" /> 1D-CNN + LSTM Deep Topology
-            </h3>
-            <span className="text-[10px] font-mono px-2 py-0.5 border border-white bg-white/10">
+            <div>
+              <h3 className="font-bold text-xl uppercase text-white flex items-center gap-2">
+                <Cpu size={22} className="text-[var(--color-brand-yellow)]" />
+                {plainLanguageMode ? 'AI Pattern Recognition Pipeline' : '1D-CNN + LSTM Deep Topology'}
+              </h3>
+              <span className="text-[10px] font-mono text-gray-300 block">
+                {plainLanguageMode ? 'Neural network layer architecture (CNN-LSTM model)' : 'Temporal Feature Convolution & Sequence Memory'}
+              </span>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 border border-white bg-white/10 shrink-0">
               PYTORCH / ONNX
             </span>
           </div>

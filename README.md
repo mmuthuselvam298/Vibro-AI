@@ -1,3 +1,9 @@
+# Vibro-AI — Real-Time Health & Prognostics for UAV Engines
+
+> **In Plain English:** When an unmanned aircraft (UAV) is flying, an unexpected engine failure can destroy the entire aircraft. Traditional cockpit warning alarms only buzz *after* critical damage or engine seizure has already happened. **Vibro-AI** continuously listens to subtle vibrations, temperatures, and pressures across 9 engine sensors—acting like a digital doctor with a stethoscope—to catch worn bearings, loose valves, and overheating hours before any failure. It gives ground crews a clear **Health Score (0–100%)**, a **Mission GO / NO-GO** recommendation, and predicted **Time Left Before Maintenance** so flight teams can prevent mid-air aborts.
+
+---
+
 <div align="center">
 
 ```

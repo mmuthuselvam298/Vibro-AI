@@ -3,11 +3,12 @@ import { useEngineStore } from '@/store/engineStore';
 import { useSignalStore } from '@/store/signalStore';
 import { computeAdaptiveBaseline } from '@/lib/physicsBaseline';
 import { GuideLink } from './GuideLink';
+import { JargonTooltip } from './JargonTooltip';
 import { Activity, Wrench, Flame, Droplets, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const HealthBreakdownCard: React.FC = () => {
-  const { engineHealth, telemetry, missionProfile, scenario } = useEngineStore();
+  const { engineHealth, telemetry, missionProfile, scenario, plainLanguageMode } = useEngineStore();
   const { timeFeatures } = useSignalStore();
 
   const baseline = React.useMemo(() => {
@@ -99,11 +100,19 @@ export const HealthBreakdownCard: React.FC = () => {
         <div className="flex items-center gap-2">
           <Activity size={18} className="stroke-[2.5]" />
           <div>
-            <h3 className="font-extrabold text-base uppercase tracking-tight leading-none">
-              Transparent Health Score Breakdown
-            </h3>
-            <span className="text-[10px] font-mono text-gray-500">
-              FIRST-PRINCIPLES WEIGHTED MULTI-DOMAIN FORMULATION
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-extrabold text-base uppercase tracking-tight leading-none">
+                {plainLanguageMode ? 'How We Calculate Engine Health' : 'Transparent Health Score Breakdown'}
+              </h3>
+              <JargonTooltip
+                term="Transparent Health Score Formula"
+                explanation="Engine Health is not an unexplainable neural net black box. It is a weighted sum across 5 physical engine domains: Mechanical (35%), Thermal (20%), Lubrication (20%), Combustion (15%), and Sensor Integrity (10%)."
+                analogy="Like a student's final grade calculated transparently from homework, midterm, lab tests, and final exam scores."
+                technicalDetails="Health = 0.35*H_mech + 0.20*H_therm + 0.20*H_lube + 0.15*H_comb + 0.10*H_sensor. Resilient to isolated sensor offset."
+              />
+            </div>
+            <span className="text-[10px] font-mono text-gray-500 font-bold block mt-0.5">
+              {plainLanguageMode ? 'Defensible weighted sum across 5 engine subsystems' : 'First-Principles Weighted Multi-Domain Formulation'}
             </span>
           </div>
         </div>
