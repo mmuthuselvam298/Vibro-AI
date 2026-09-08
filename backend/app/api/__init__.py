@@ -7,6 +7,8 @@ from .health import router as health_router
 from .prognostics import router as prognostics_router
 from .vibration import router as vibration_router
 from .digital_twin import router as digital_twin_router
+from .websocket import websocket_router
+from .simulation import simulation_router
 
 __all__ = [
     "engines_router",
@@ -18,4 +20,6 @@ __all__ = [
     "prognostics_router",
     "vibration_router",
     "digital_twin_router",
+    "websocket_router",
+    "simulation_router",
 ]

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: vibro-ai-backend
+    env: python
+    rootDir: backend
+    region: oregon
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python scripts/train_model.py
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: CORS_ORIGINS
+        value: https://vibro-ai-main.vercel.app,http://localhost:5173,http://127.0.0.1:5173
+      - key: DATABASE_URL
+        sync: false

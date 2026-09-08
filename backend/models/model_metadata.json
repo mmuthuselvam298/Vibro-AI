@@ -1,0 +1,191 @@
+{
+  "model_type": "RandomForestClassifier",
+  "library": "scikit-learn",
+  "library_version": "1.9.0",
+  "dataset_version": "1.0.0",
+  "training_seed": 42,
+  "classes": [
+    "HEALTHY",
+    "BEARING_OUTER_RACE",
+    "BEARING_INNER_RACE",
+    "ROLLING_ELEMENT_DEFECT",
+    "PISTON_SLAP",
+    "VALVE_LASH"
+  ],
+  "feature_names": [
+    "rms",
+    "peak",
+    "peak_to_peak",
+    "crest_factor",
+    "kurtosis",
+    "skewness",
+    "mean",
+    "std_dev",
+    "dominant_frequency",
+    "spectral_energy",
+    "harmonic_energy_1x",
+    "harmonic_energy_2x",
+    "harmonic_energy_4x",
+    "bpfo_band_energy",
+    "bsf_band_energy",
+    "high_freq_energy_ratio",
+    "band_1_energy",
+    "band_2_energy",
+    "band_3_energy",
+    "band_4_energy",
+    "band_5_energy",
+    "band_6_energy",
+    "band_7_energy",
+    "band_8_energy"
+  ],
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 12,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "dataset_statistics": {
+    "total_samples": 900,
+    "train_samples": 720,
+    "test_samples": 180,
+    "samples_per_class_test": 30
+  },
+  "evaluation_metrics": {
+    "accuracy": 0.8944,
+    "precision_macro": 0.8955,
+    "recall_macro": 0.8944,
+    "f1_macro": 0.8915,
+    "precision_weighted": 0.8955,
+    "recall_weighted": 0.8944,
+    "f1_weighted": 0.8915,
+    "confusion_matrix": [
+      [
+        30,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        22,
+        8,
+        0,
+        0,
+        0
+      ],
+      [
+        8,
+        3,
+        19,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        30,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        30,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        30
+      ]
+    ],
+    "classification_report": {
+      "HEALTHY": {
+        "precision": 0.7894736842105263,
+        "recall": 1.0,
+        "f1-score": 0.8823529411764706,
+        "support": 30.0
+      },
+      "BEARING_OUTER_RACE": {
+        "precision": 0.88,
+        "recall": 0.7333333333333333,
+        "f1-score": 0.8,
+        "support": 30.0
+      },
+      "BEARING_INNER_RACE": {
+        "precision": 0.7037037037037037,
+        "recall": 0.6333333333333333,
+        "f1-score": 0.6666666666666666,
+        "support": 30.0
+      },
+      "ROLLING_ELEMENT_DEFECT": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 30.0
+      },
+      "PISTON_SLAP": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 30.0
+      },
+      "VALVE_LASH": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 30.0
+      },
+      "accuracy": 0.8944444444444445,
+      "macro avg": {
+        "precision": 0.8955295646523718,
+        "recall": 0.8944444444444445,
+        "f1-score": 0.8915032679738563,
+        "support": 180.0
+      },
+      "weighted avg": {
+        "precision": 0.8955295646523717,
+        "recall": 0.8944444444444445,
+        "f1-score": 0.8915032679738562,
+        "support": 180.0
+      }
+    }
+  },
+  "feature_importances": {
+    "peak_to_peak": 0.0982378661217295,
+    "band_8_energy": 0.08508385465311986,
+    "spectral_energy": 0.07830187664885888,
+    "band_4_energy": 0.07705458340603175,
+    "band_5_energy": 0.07446736256637482,
+    "harmonic_energy_4x": 0.06651037715938973,
+    "mean": 0.06082748245651166,
+    "high_freq_energy_ratio": 0.05711867849537266,
+    "band_6_energy": 0.05083377378484706,
+    "crest_factor": 0.0450393626356796,
+    "band_7_energy": 0.044700045688413736,
+    "std_dev": 0.039006799462425475,
+    "rms": 0.03809304701472953,
+    "peak": 0.03743025299083213,
+    "band_3_energy": 0.030010968847884786,
+    "kurtosis": 0.027054222202390014,
+    "bsf_band_energy": 0.021620129358321343,
+    "band_1_energy": 0.018641634440130252,
+    "band_2_energy": 0.012520981800673727,
+    "bpfo_band_energy": 0.012288288018530958,
+    "harmonic_energy_2x": 0.011432534829253653,
+    "skewness": 0.006141648153101629,
+    "harmonic_energy_1x": 0.005593890167506926,
+    "dominant_frequency": 0.0019903390978903775
+  }
+}

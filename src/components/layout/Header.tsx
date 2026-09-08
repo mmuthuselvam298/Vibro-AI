@@ -60,6 +60,10 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, onOpenTour, onOpe
             <span className="flex items-center gap-1 font-bold text-blue-900">
               <Plane size={12} /> {missionProfile.replace('_', ' ')}
             </span>
+            <span>|</span>
+            <span className="px-1.5 py-0.5 border border-black bg-neutral-100 text-neutral-900 font-bold text-[10px] hidden sm:inline-block shadow-[1px_1px_0px_0px_#000]">
+              DATA SOURCE: SIMULATED
+            </span>
           </div>
         </div>
       </div>

@@ -123,7 +123,7 @@ export const EvidenceHardwarePage: React.FC = () => {
               </li>
               <li className="flex justify-between border-b border-gray-300 pb-1">
                 <span className="font-bold text-gray-600">Overall Classification Accuracy:</span>
-                <span className="font-bold text-right text-green-700">97.8% (F1-Score: 0.974)</span>
+                <span className="font-bold text-right text-green-700">89.4% (F1-Score: 0.892) [Measured Held-Out]</span>
               </li>
               <li className="flex justify-between">
                 <span className="font-bold text-gray-600">Target Airframe Engine:</span>

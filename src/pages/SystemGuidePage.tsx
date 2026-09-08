@@ -202,8 +202,8 @@ export const SystemGuidePage: React.FC = () => {
                   <div>STM32 Microcontroller + DMA Buffer + CAN Bus</div>
                 </div>
                 <div className="p-3 border-2 border-black bg-gray-100">
-                  <div className="font-bold text-sm mb-1">3. EDGE INFERENCE</div>
-                  <div>Raspberry Pi CM4 (CNN-LSTM + DSP + Kalman Fusion)</div>
+                  <div className="font-bold text-sm mb-1">3. AUTHORITATIVE ENGINE</div>
+                  <div>FastAPI Backend (Random Forest ML + Radix-2 FFT DSP)</div>
                 </div>
                 <div className="p-3 border-2 border-black bg-gray-100">
                   <div className="font-bold text-sm mb-1">4. DIGITAL TWIN</div>
@@ -336,20 +336,20 @@ export const SystemGuidePage: React.FC = () => {
           <section id="07-ai-fault-diagnosis" className="neo-card bg-white p-6 space-y-4">
             <div className="flex justify-between items-center border-b-4 border-black pb-2">
               <h2 className="text-2xl font-bold uppercase tracking-tight">07 — AI Fault Diagnosis</h2>
-              <span className="neo-badge bg-[var(--color-brand-blue)] text-white">CNN-LSTM</span>
+              <span className="neo-badge bg-[var(--color-brand-blue)] text-white">RANDOM FOREST</span>
             </div>
             <p className="text-sm font-mono leading-relaxed">
-              The AI classification pipeline combines a 1D Convolutional Neural Network (CNN) for spatial feature extraction with a Long Short-Term Memory (LSTM) sequence layer for temporal dependency tracking:
+              The AI classification pipeline combines real-time Radix-2 FFT and statistical moment extraction with a multivariate Random Forest ensemble classifier:
             </p>
             <div className="space-y-2 font-mono text-xs">
               <div className="p-2 border-l-4 border-[var(--color-brand-blue)] bg-gray-50 pl-3">
-                <strong>Layer 1 (1D-CNN):</strong> 3 convolutional blocks (Kernel sizes: 15, 7, 3; Filters: 32, 64, 128) + BatchNorm + LeakyReLU + MaxPooling.
+                <strong>Stage 1 (Authoritative DSP Extraction):</strong> 24 features including RMS, peak-to-peak, kurtosis, crest factor, spectral energy, 1X/2X/4X harmonics, BPFO/BSF band energies, and 8-band spectral decomposition.
               </div>
               <div className="p-2 border-l-4 border-[var(--color-brand-blue)] bg-gray-50 pl-3">
-                <strong>Layer 2 (Bidirectional LSTM):</strong> 64 hidden units tracking sequential degradation trends across sequential 0.5s windows.
+                <strong>Stage 2 (Random Forest Ensemble):</strong> 100 decision trees (max depth 12) trained on 900 reproducible vibration bursts across 6 target classes (89.44% measured held-out test accuracy).
               </div>
               <div className="p-2 border-l-4 border-[var(--color-brand-blue)] bg-gray-50 pl-3">
-                <strong>Layer 3 (Dense & Softmax):</strong> Multi-class probability distribution across all 12 fault categories with calibrated temperature scaling.
+                <strong>Stage 3 (Multi-Evidence Synthesis):</strong> Cross-references model output with physics baseline thresholds, thermal indicators, and DC sensor drift isolation before candidate advisory generation.
               </div>
             </div>
           </section>

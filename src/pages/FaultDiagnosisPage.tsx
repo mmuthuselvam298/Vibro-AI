@@ -61,41 +61,41 @@ export const FaultDiagnosisPage: React.FC = () => {
             <div>
               <h3 className="font-bold text-xl uppercase text-white flex items-center gap-2">
                 <Cpu size={22} className="text-[var(--color-brand-yellow)]" />
-                {plainLanguageMode ? 'AI Pattern Recognition Pipeline' : '1D-CNN + LSTM Deep Topology'}
+                {plainLanguageMode ? 'AI Pattern Recognition Pipeline' : 'Multi-Class Random Forest & DSP Pipeline'}
               </h3>
               <span className="text-[10px] font-mono text-gray-300 block">
-                {plainLanguageMode ? 'Neural network layer architecture (CNN-LSTM model)' : 'Temporal Feature Convolution & Sequence Memory'}
+                {plainLanguageMode ? 'Trained machine learning classification model' : 'Statistical Moments, Spectral Bands & Decision Ensemble'}
               </span>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 border border-white bg-white/10 shrink-0">
-              PYTORCH / ONNX
+              SCIKIT-LEARN / FASTAPI
             </span>
           </div>
 
           <div className="space-y-3 font-mono text-xs">
             <div className="p-2.5 border-l-4 border-[var(--color-brand-yellow)] bg-white/10 pl-3">
-              <div className="text-[var(--color-brand-yellow)] font-bold">1. INPUT TENSOR (Batch, Channels=9, Time=500)</div>
-              <div className="text-gray-200">Raw ADXL355 Triaxial Vibration + RPM + CHT + EGT + Oil P/T + Fuel Flow.</div>
+              <div className="text-[var(--color-brand-yellow)] font-bold">1. REAL-TIME DSP FEATURE EXTRACTION</div>
+              <div className="text-gray-200">512 samples @ 1024 Hz, Radix-2 FFT, RMS, peak, kurtosis, crest factor, and 8 uniform frequency bands.</div>
             </div>
 
             <div className="p-2.5 border-l-4 border-[var(--color-brand-yellow)] bg-white/10 pl-3">
-              <div className="text-[var(--color-brand-yellow)] font-bold">2. 1D CONVOLUTIONAL FEATURE EXTRACTION</div>
-              <div className="text-gray-200">3 Conv1D layers (Kernels 15, 7, 3; Receptive field covers fundamental and high harmonics).</div>
+              <div className="text-[var(--color-brand-yellow)] font-bold">2. MULTIVARIATE RANDOM FOREST CLASSIFIER</div>
+              <div className="text-gray-200">100 decision trees (depth 12) trained on 900 reproducible vibration signals across 6 mechanical classes.</div>
             </div>
 
             <div className="p-2.5 border-l-4 border-[var(--color-brand-yellow)] bg-white/10 pl-3">
-              <div className="text-[var(--color-brand-yellow)] font-bold">3. TEMPORAL LSTM SEQUENCE RECURRENT LAYER</div>
-              <div className="text-gray-200">Bidirectional LSTM (64 hidden units) models temporal degradation and dynamic transitions.</div>
+              <div className="text-[var(--color-brand-yellow)] font-bold">3. SENSOR DRIFT & PHYSICS CORROBORATION</div>
+              <div className="text-gray-200">Isolates transducer DC bias shift (+1.1g) from structural bearing impacts and cross-references thermal residuals.</div>
             </div>
 
             <div className="p-2.5 border-l-4 border-[var(--color-brand-yellow)] bg-white/10 pl-3">
-              <div className="text-[var(--color-brand-yellow)] font-bold">4. DENSE & SOFTMAX MULTI-CLASS PROBABILITY</div>
-              <div className="text-gray-200">Outputs 12 posterior class probabilities with calibrated temperature scaling for uncertainty estimation.</div>
+              <div className="text-[var(--color-brand-yellow)] font-bold">4. MULTI-EVIDENCE SYNTHESIS & PROBABILITY</div>
+              <div className="text-gray-200">Evaluates primary, supporting, and conflicting evidence with actual model-derived class probabilities.</div>
             </div>
           </div>
 
           <div className="mt-4 pt-2 border-t border-white/20 text-[10px] text-gray-400 font-mono">
-            * Edge inference deployed via ONNX Runtime execution engine on Raspberry Pi CM4 (&lt; 20 ms).
+            * Authoritative backend inference running on FastAPI server with WebSocket real-time streaming.
           </div>
         </div>
 

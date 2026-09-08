@@ -7,6 +7,8 @@ from . import models  # noqa: F401 - ensures all SQLModel tables are registered 
 def _resolve_database_url() -> str:
     env_url = os.getenv("DATABASE_URL")
     if env_url:
+        if env_url.startswith("postgres://"):
+            env_url = env_url.replace("postgres://", "postgresql://", 1)
         return env_url
 
     backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -3,6 +3,8 @@ import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import { HeroMetrics } from '@/components/dashboard/HeroMetrics';
 import { RoiImpactStrip } from '@/components/dashboard/RoiImpactStrip';
 import { ExpectedVsCurrentBars } from '@/components/dashboard/ExpectedVsCurrentBars';
+import { SystemTracePanel } from '@/components/dashboard/SystemTracePanel';
+import { DspEvidencePanel } from '@/components/dashboard/DspEvidencePanel';
 import { MissionReliabilityPanel } from '@/components/dashboard/MissionReliabilityPanel';
 import { HealthBreakdownCard } from '@/components/dashboard/HealthBreakdownCard';
 import { TraditionalVsVibroCard } from '@/components/dashboard/TraditionalVsVibroCard';
@@ -46,6 +48,10 @@ export const CommandCenter: React.FC = () => {
 
       {/* 3. PROMINENT CORE SECTION: EXPECTED HEALTHY STATE VS CURRENT LIVE ENGINE */}
       <ExpectedVsCurrentBars />
+
+      {/* 4. JUDGE-FACING SYSTEM TRACE & EVIDENCE PIPELINE */}
+      <SystemTracePanel />
+      <DspEvidencePanel />
 
       {/* 3. Module Navigation Tabs & Quick Actions */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-black pb-3">

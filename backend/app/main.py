@@ -14,6 +14,8 @@ from .api import (
     prognostics_router,
     vibration_router,
     digital_twin_router,
+    websocket_router,
+    simulation_router,
 )
 
 
@@ -32,8 +34,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS Configuration for local frontend development
-allowed_origins_env = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174")
+# CORS Configuration for local frontend and production Vercel frontend
+allowed_origins_env = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,https://vibro-ai-main.vercel.app",
+)
 allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
 app.add_middleware(
@@ -66,3 +71,5 @@ app.include_router(health_router, prefix="/api")
 app.include_router(prognostics_router, prefix="/api")
 app.include_router(vibration_router, prefix="/api")
 app.include_router(digital_twin_router, prefix="/api")
+app.include_router(simulation_router, prefix="/api")
+app.include_router(websocket_router)

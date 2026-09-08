@@ -253,3 +253,75 @@ export async function ingestVibrationBurst(
     },
   );
 }
+
+/**
+ * Resolves the WebSocket streaming URL dynamically from environment or origin.
+ */
+export function resolveWebSocketUrl(path: string = '/ws/telemetry'): string {
+  if (
+    typeof import.meta !== 'undefined' &&
+    import.meta.env &&
+    typeof import.meta.env.VITE_WS_BASE_URL === 'string' &&
+    import.meta.env.VITE_WS_BASE_URL.trim() !== ''
+  ) {
+    const base = import.meta.env.VITE_WS_BASE_URL.trim().replace(/\/$/, '');
+    return `${base}${path.startsWith('/') ? path : '/' + path}`;
+  }
+
+  if (API_BASE_URL.startsWith('http://') || API_BASE_URL.startsWith('https://')) {
+    const wsProto = API_BASE_URL.startsWith('https://') ? 'wss://' : 'ws://';
+    const host = API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    return `${wsProto}${host}${path.startsWith('/') ? path : '/' + path}`;
+  }
+
+  if (typeof window !== 'undefined') {
+    const wsProto = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    return `${wsProto}${window.location.host}${path.startsWith('/') ? path : '/' + path}`;
+  }
+
+  return `ws://127.0.0.1:8000${path}`;
+}
+
+/**
+ * Set server-owned simulation scenario (EARLY_BEARING_WEAR, SENSOR_DRIFT, etc.).
+ */
+export async function setSimulationScenario(engineId: number, scenario: string) {
+  return apiRequest<{ status: string; scenario: string; candidate_fault: string; severity: string }>(
+    '/api/simulation/scenario',
+    {
+      method: 'POST',
+      body: JSON.stringify({ engine_id: engineId, scenario }),
+    },
+  );
+}
+
+/**
+ * Set server-owned simulation flight phase (TAKEOFF, CLIMB, CRUISE, LANDING).
+ */
+export async function setSimulationPhase(engineId: number, phase: string) {
+  return apiRequest<{ status: string; phase: string }>(
+    '/api/simulation/phase',
+    {
+      method: 'POST',
+      body: JSON.stringify({ engine_id: engineId, phase }),
+    },
+  );
+}
+
+/**
+ * Get current simulation frame and diagnosis from backend.
+ */
+export async function getSimulationState(engineId: number = 1) {
+  return apiRequest<{ status: string; frame: any; diagnosis: any }>(
+    `/api/simulation/state?engine_id=${engineId}`,
+  );
+}
+
+/**
+ * Get full multi-stage System Trace explaining the complete engineering inference chain.
+ */
+export async function getSystemTrace(engineId: number = 1) {
+  return apiRequest<{ engine_id: number; scenario: string; trace: any[]; timestamp: string }>(
+    `/api/simulation/system-trace?engine_id=${engineId}`,
+  );
+}

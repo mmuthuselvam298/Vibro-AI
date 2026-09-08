@@ -340,3 +340,84 @@ export interface FaultsFilterOptions {
   active_only?: boolean;
   limit?: number;
 }
+
+export interface SystemTraceStep {
+  step: number;
+  stage: 'SENSOR' | 'DSP' | 'INTELLIGENCE' | 'HEALTH' | 'RUL' | 'DIGITAL_TWIN' | 'MISSION' | 'DECISION_SUPPORT';
+  title: string;
+  detail: string;
+  status: string;
+  source: string;
+}
+
+export interface SystemTraceResponse {
+  engine_id: number;
+  scenario: string;
+  trace: SystemTraceStep[];
+  timestamp: string;
+}
+
+export interface DiagnosisPayload {
+  candidate_fault: string;
+  raw_fault_code: string;
+  severity: 'NOMINAL' | 'WATCH' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  confidence: number;
+  affected_component: string;
+  health_score: number;
+  rul_cycles: number;
+  degradation_rate_per_100_cycles: number;
+  evidence_agreement: string;
+  evidence: {
+    primary: string[];
+    supporting: string[];
+    conflicting: string[];
+  };
+  dsp_metrics: Record<string, number>;
+  dominant_frequency_hz: number;
+  dominant_band: string;
+  mission_risk: {
+    risk_level: string;
+    phase: string;
+    explanation: string;
+  };
+  recommended_action: string;
+  source: string;
+  model_version: string;
+}
+
+export interface EngineStateWebSocketMessage {
+  type: 'engine_state';
+  timestamp: string;
+  engine_id: number;
+  engine_serial: string;
+  scenario: string;
+  mission_phase: string;
+  data_source: string;
+  telemetry: {
+    rpm: number;
+    expected_rpm: number;
+    cht: number;
+    expected_cht: number;
+    egt: number;
+    expected_egt: number;
+    oil_pressure: number;
+    expected_oil_pressure: number;
+    oil_temp: number;
+    expected_oil_temp: number;
+    fuel_flow: number;
+    expected_fuel_flow: number;
+    vibration_rms: number;
+    expected_vibration_rms: number;
+    battery_voltage: number;
+    injection_timing: number;
+  };
+  vibration: {
+    axis: string;
+    sampling_rate_hz: number;
+    samples_count: number;
+    rms_g: number;
+    samples: number[];
+  };
+  diagnosis: DiagnosisPayload;
+  system_trace: Record<string, any>;
+}
