@@ -9,7 +9,16 @@ import os
 import json
 import logging
 from typing import Dict, Any, List, Optional
-import numpy as np
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
+
+try:
+    import joblib
+except ImportError:
+    joblib = None
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +42,12 @@ class MLInferenceService:
 
     def _load_model(self):
         """Loads model artifact and metadata if available."""
+        if joblib is None or np is None:
+            logger.warning(
+                "joblib or numpy is not installed. ML inference service will run in fallback rule mode."
+            )
+            return
+
         if not os.path.exists(self.model_path) or not os.path.exists(self.metadata_path):
             logger.warning(
                 f"ML model artifact or metadata not found at {self.model_path}. "
@@ -41,7 +56,6 @@ class MLInferenceService:
             return
 
         try:
-            import joblib
             self.model = joblib.load(self.model_path)
             with open(self.metadata_path, "r", encoding="utf-8") as f:
                 self.metadata = json.load(f)
@@ -59,7 +73,7 @@ class MLInferenceService:
         Executes inference on a vibration feature dictionary.
         Returns predicted fault_type, class probabilities, and confidence derived from model output.
         """
-        if not self.is_loaded or self.model is None:
+        if not self.is_loaded or self.model is None or np is None:
             return {
                 "fault_type": "UNKNOWN",
                 "probabilities": {},

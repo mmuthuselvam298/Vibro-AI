@@ -35,16 +35,25 @@ export function useBackendWebSocket(enabled: boolean = true) {
       return;
     }
 
+    let retryCount = 0;
+    const maxRetries = 3;
+
     function connect() {
       if (!isMountedRef.current) return;
 
       const url = resolveWebSocketUrl('/ws/telemetry?engine_id=1');
+      if (!url) {
+        // WebSocket not supported or disabled on current host (e.g. Vercel serverless)
+        return;
+      }
+
       try {
         const ws = new WebSocket(url);
         wsRef.current = ws;
 
         ws.onopen = () => {
           if (!isMountedRef.current) return;
+          retryCount = 0;
           useBackendEngineStore.setState({ backendConnected: true, error: null });
         };
 
@@ -156,8 +165,10 @@ export function useBackendWebSocket(enabled: boolean = true) {
         ws.onclose = () => {
           if (!isMountedRef.current) return;
           useBackendEngineStore.setState({ backendConnected: false });
-          // Schedule reconnect attempt
-          reconnectTimeoutRef.current = setTimeout(connect, 3000);
+          if (retryCount < maxRetries) {
+            retryCount++;
+            reconnectTimeoutRef.current = setTimeout(connect, 3000);
+          }
         };
 
         ws.onerror = () => {
@@ -166,7 +177,10 @@ export function useBackendWebSocket(enabled: boolean = true) {
         };
       } catch {
         useBackendEngineStore.setState({ backendConnected: false });
-        reconnectTimeoutRef.current = setTimeout(connect, 3000);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          reconnectTimeoutRef.current = setTimeout(connect, 3000);
+        }
       }
     }
 

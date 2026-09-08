@@ -19,12 +19,12 @@ import type {
 /**
  * Default fallback backend URL:
  * - Local development (DEV): defaults to local FastAPI server 'http://127.0.0.1:8000'
- * - Production (PROD): defaults to live Render FastAPI server 'https://vibro-ai.onrender.com'
+ * - Production (PROD): defaults to same-origin relative path '' for Vercel deployment
  */
 export const DEFAULT_API_BASE_URL =
   typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV
     ? 'http://127.0.0.1:8000'
-    : 'https://vibro-ai.onrender.com';
+    : '';
 
 /**
  * Resolved API base URL, sourced from Vite environment variables with environment-aware fallback.
@@ -267,6 +267,12 @@ export function resolveWebSocketUrl(path: string = '/ws/telemetry'): string {
   ) {
     const base = import.meta.env.VITE_WS_BASE_URL.trim().replace(/\/$/, '');
     return `${base}${path.startsWith('/') ? path : '/' + path}`;
+  }
+
+  // If running in browser on Vercel (*.vercel.app), serverless does not support persistent WebSockets.
+  // Return empty string to gracefully rely on HTTP polling sync without console errors.
+  if (typeof window !== 'undefined' && window.location.hostname.endsWith('vercel.app')) {
+    return '';
   }
 
   if (API_BASE_URL.startsWith('http://') || API_BASE_URL.startsWith('https://')) {
