@@ -50,6 +50,21 @@ app.add_middleware(
 )
 
 
+@app.get("/")
+def root():
+    """Root landing endpoint for Render service."""
+    return {
+        "status": "online",
+        "service": "Vibro-AI Authoritative Backend",
+        "version": "0.1.0",
+        "docs_url": "/docs",
+        "health_check": "/health",
+        "websocket_stream": "/ws/telemetry",
+        "frontend_dashboard": "https://vibro-ai-main.vercel.app",
+        "message": "Vibro-AI FastAPI backend is operational. For interactive Swagger API documentation, visit /docs. For the Command Center frontend, visit https://vibro-ai-main.vercel.app.",
+    }
+
+
 @app.get("/health")
 @app.get("/api/health")
 def health_check():
