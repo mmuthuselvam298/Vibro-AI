@@ -19,12 +19,12 @@ import type {
 /**
  * Default fallback backend URL:
  * - Local development (DEV): defaults to local FastAPI server 'http://127.0.0.1:8000'
- * - Production (PROD): defaults to same-origin '' so all requests use relative '/api/...'
+ * - Production (PROD): defaults to live Render FastAPI server 'https://vibro-ai.onrender.com'
  */
 export const DEFAULT_API_BASE_URL =
   typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV
     ? 'http://127.0.0.1:8000'
-    : '';
+    : 'https://vibro-ai.onrender.com';
 
 /**
  * Resolved API base URL, sourced from Vite environment variables with environment-aware fallback.
@@ -32,8 +32,9 @@ export const DEFAULT_API_BASE_URL =
 export const API_BASE_URL: string =
   typeof import.meta !== 'undefined' &&
   import.meta.env &&
-  typeof import.meta.env.VITE_API_BASE_URL === 'string'
-    ? import.meta.env.VITE_API_BASE_URL
+  typeof import.meta.env.VITE_API_BASE_URL === 'string' &&
+  import.meta.env.VITE_API_BASE_URL.trim() !== ''
+    ? import.meta.env.VITE_API_BASE_URL.trim()
     : DEFAULT_API_BASE_URL;
 
 /**
