@@ -55,6 +55,14 @@ export function useBackendWebSocket(enabled: boolean = true) {
           if (!isMountedRef.current) return;
           retryCount = 0;
           useBackendEngineStore.setState({ backendConnected: true, error: null });
+
+          // Synchronize client's current scenario to the server on connect
+          const activeScenario = useEngineStore.getState().scenario;
+          if (activeScenario && activeScenario !== 'HEALTHY') {
+            try {
+              ws.send(JSON.stringify({ action: 'set_scenario', scenario: activeScenario }));
+            } catch {}
+          }
         };
 
         ws.onmessage = (event) => {
@@ -64,10 +72,17 @@ export function useBackendWebSocket(enabled: boolean = true) {
             if (data.type === 'engine_state') {
               const diag = data.diagnosis;
               const tel = data.telemetry;
+              const currentScenario = useEngineStore.getState().scenario;
+
+              // If the user selected an active demo scenario, do NOT let incoming default
+              // or stale frames forcibly reset the scenario back to HEALTHY!
+              if (currentScenario !== 'HEALTHY' && data.scenario && data.scenario !== currentScenario) {
+                return;
+              }
 
               // 1. Update authoritative engineStore
               useEngineStore.setState((prev) => ({
-                scenario: (data.scenario as ScenarioType) || prev.scenario,
+                scenario: prev.scenario !== 'HEALTHY' ? prev.scenario : ((data.scenario as ScenarioType) || prev.scenario),
                 engineHealth: diag.health_score,
                 faultType: diag.raw_fault_code,
                 severity: diag.severity as any,
@@ -197,6 +212,12 @@ export function useBackendWebSocket(enabled: boolean = true) {
       }
     };
   }, [enabled]);
+
+  // Automatically sync scenario changes to the backend over WebSocket
+  const currentScenario = useEngineStore((s) => s.scenario);
+  useEffect(() => {
+    changeScenarioOnServer(currentScenario);
+  }, [currentScenario, changeScenarioOnServer]);
 
   return {
     sendCommand,

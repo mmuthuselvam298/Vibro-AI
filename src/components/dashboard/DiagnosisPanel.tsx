@@ -9,7 +9,7 @@ import { Target, CheckCircle2, AlertTriangle, HelpCircle, ShieldCheck, ShieldAle
 import { cn } from '@/lib/utils';
 
 export const DiagnosisPanel: React.FC = () => {
-  const { faultType: simFaultType, confidence: simConfidence, evidencePoints: simEvidencePoints, telemetry, missionProfile, plainLanguageMode } = useEngineStore();
+  const { scenario, faultType: simFaultType, confidence: simConfidence, evidencePoints: simEvidencePoints, telemetry, missionProfile, plainLanguageMode } = useEngineStore();
   const { timeFeatures, spectralFeatures } = useSignalStore();
   const { digitalTwin, faults, backendConnected } = useBackendEngineState();
 
@@ -44,43 +44,54 @@ export const DiagnosisPanel: React.FC = () => {
   // Check if backend state is actively available
   const latestBackendFault = faults && faults.length > 0 ? faults[0] : null;
   const isBackendActive = Boolean(backendConnected && (digitalTwin || latestBackendFault));
+  const isDemoFaultActive = scenario !== 'HEALTHY';
 
-  // Determine effective values
-  const effectiveFaultName = isBackendActive
-    ? latestBackendFault
-      ? latestBackendFault.fault_title || latestBackendFault.fault_code.replace(/_/g, ' ')
-      : digitalTwin?.operational_status === 'HEALTHY'
-        ? 'NOMINAL / NO CANDIDATE FAULT'
-        : (digitalTwin?.operational_status ? `${digitalTwin.operational_status} STATE` : simFaultType)
-    : simFaultType;
+  // Determine effective values: if user has injected a demo scenario, always honor that scenario
+  const effectiveFaultName = isDemoFaultActive
+    ? simFaultType
+    : isBackendActive
+      ? latestBackendFault
+        ? latestBackendFault.fault_title || latestBackendFault.fault_code.replace(/_/g, ' ')
+        : digitalTwin?.operational_status && digitalTwin.operational_status !== 'NOMINAL' && digitalTwin.operational_status !== 'HEALTHY'
+          ? `${digitalTwin.operational_status} STATE`
+          : simFaultType
+      : simFaultType;
 
-  const effectiveConfidence = isBackendActive
-    ? latestBackendFault
-      ? latestBackendFault.confidence
-      : (digitalTwin?.overall_health_score ?? simConfidence)
-    : simConfidence;
+  const effectiveConfidence = isDemoFaultActive
+    ? simConfidence
+    : isBackendActive
+      ? latestBackendFault
+        ? latestBackendFault.confidence
+        : (digitalTwin?.overall_health_score ?? simConfidence)
+      : simConfidence;
 
-  const effectiveAnomalyScore = isBackendActive
-    ? latestBackendFault
-      ? Math.round(latestBackendFault.confidence)
-      : Math.round(100 - (digitalTwin?.overall_health_score ?? 100))
-    : simAnomalyScore;
+  const effectiveAnomalyScore = isDemoFaultActive
+    ? simAnomalyScore
+    : isBackendActive
+      ? latestBackendFault
+        ? Math.round(latestBackendFault.confidence)
+        : Math.round(100 - (digitalTwin?.overall_health_score ?? 100))
+      : simAnomalyScore;
 
-  const effectiveEvidencePoints: string[] = isBackendActive
-    ? (digitalTwin?.evidence && digitalTwin.evidence.length > 0)
-      ? digitalTwin.evidence
-      : (latestBackendFault?.evidence && latestBackendFault.evidence.length > 0)
-        ? latestBackendFault.evidence
-        : simEvidencePoints
-    : simEvidencePoints;
-
-  const effectiveWhyFlagged: string[] = isBackendActive
-    ? latestBackendFault?.fusion_summary
-      ? [latestBackendFault.fusion_summary, ...(digitalTwin?.evidence ?? []).filter(e => e !== latestBackendFault.fusion_summary)]
-      : (digitalTwin?.evidence && digitalTwin.evidence.length > 0)
+  const effectiveEvidencePoints: string[] = isDemoFaultActive
+    ? simEvidencePoints
+    : isBackendActive
+      ? (digitalTwin?.evidence && digitalTwin.evidence.length > 0)
         ? digitalTwin.evidence
-        : simWhyFlagged
-    : simWhyFlagged;
+        : (latestBackendFault?.evidence && latestBackendFault.evidence.length > 0)
+          ? latestBackendFault.evidence
+          : simEvidencePoints
+      : simEvidencePoints;
+
+  const effectiveWhyFlagged: string[] = isDemoFaultActive
+    ? simWhyFlagged
+    : isBackendActive
+      ? latestBackendFault?.fusion_summary
+        ? [latestBackendFault.fusion_summary, ...(digitalTwin?.evidence ?? []).filter(e => e !== latestBackendFault.fusion_summary)]
+        : (digitalTwin?.evidence && digitalTwin.evidence.length > 0)
+          ? digitalTwin.evidence
+          : simWhyFlagged
+      : simWhyFlagged;
 
   const getConsistencyBadge = () => {
     if (isBackendActive && latestBackendFault) {

@@ -10,12 +10,21 @@ export const DegradationChart: React.FC = () => {
   const { digitalTwin, prognostics, backendConnected } = useBackendEngineState();
 
   const isBackendActive = Boolean(backendConnected && (digitalTwin || prognostics));
+  const isDemoFaultActive = scenario !== 'HEALTHY';
 
-  const effectiveRul = prognostics?.rul_nominal_cycles ?? digitalTwin?.prognostics?.rul_nominal_cycles ?? simRul;
-  const effectiveDegradationRate = digitalTwin?.health_trajectory?.degradation_rate_per_hour != null
-    ? digitalTwin.health_trajectory.degradation_rate_per_hour
-    : simDegradationRate;
-  const currentHealth = digitalTwin?.overall_health_score ?? engineHealth;
+  const effectiveRul = isDemoFaultActive
+    ? simRul
+    : (prognostics?.rul_nominal_cycles ?? digitalTwin?.prognostics?.rul_nominal_cycles ?? simRul);
+
+  const effectiveDegradationRate = isDemoFaultActive
+    ? simDegradationRate
+    : (digitalTwin?.health_trajectory?.degradation_rate_per_hour != null
+      ? digitalTwin.health_trajectory.degradation_rate_per_hour
+      : simDegradationRate);
+
+  const currentHealth = isDemoFaultActive
+    ? engineHealth
+    : (digitalTwin?.overall_health_score ?? engineHealth);
 
   const data = useMemo(() => {
     const pts = [];

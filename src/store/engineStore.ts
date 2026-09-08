@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { setSimulationScenario } from '@/lib/api/client';
 
 export type ScenarioType =
   | 'HEALTHY'
@@ -623,42 +624,50 @@ export const useEngineStore = create<EngineState>((set) => ({
     ]
   })),
 
-  resetToHealthy: () => set((state) => {
-    const def = scenarioDefinitions.HEALTHY;
-    const newEvent: EngineEventLog = {
-      id: `evt-${Date.now()}`,
-      time: new Date().toTimeString().slice(0, 8),
-      type: 'ACTION',
-      title: 'Quick Reset to Healthy Engine State',
-      detail: 'Operator restored baseline telemetry envelope. Vibration and thermal residuals cleared.',
-      severity: 'NOMINAL',
-    };
-    return {
-      scenario: 'HEALTHY',
-      ...def,
-      telemetry: buildInitialTelemetry('HEALTHY'),
-      eventLog: [newEvent, ...state.eventLog.slice(0, 24)],
-    };
-  }),
+  resetToHealthy: () => {
+    setSimulationScenario(1, 'HEALTHY').catch(() => {});
 
-  setScenario: (scenario: ScenarioType) => set((state) => {
-    const def = scenarioDefinitions[scenario];
-    const newEvent: EngineEventLog = {
-      id: `evt-${Date.now()}`,
-      time: new Date().toTimeString().slice(0, 8),
-      type: 'SCENARIO_CHANGE',
-      title: `Scenario Injected: ${def.faultType}`,
-      detail: def.fusionSummary,
-      severity: def.severity,
-    };
-    return {
-      scenario,
-      ...def,
-      telemetry: buildInitialTelemetry(scenario),
-      inferenceLatency: 18 + Math.floor(Math.random() * 8),
-      eventLog: [newEvent, ...state.eventLog.slice(0, 24)],
-    };
-  }),
+    set((state) => {
+      const def = scenarioDefinitions.HEALTHY;
+      const newEvent: EngineEventLog = {
+        id: `evt-${Date.now()}`,
+        time: new Date().toTimeString().slice(0, 8),
+        type: 'ACTION',
+        title: 'Quick Reset to Healthy Engine State',
+        detail: 'Operator restored baseline telemetry envelope. Vibration and thermal residuals cleared.',
+        severity: 'NOMINAL',
+      };
+      return {
+        scenario: 'HEALTHY',
+        ...def,
+        telemetry: buildInitialTelemetry('HEALTHY'),
+        eventLog: [newEvent, ...state.eventLog.slice(0, 24)],
+      };
+    });
+  },
+
+  setScenario: (scenario: ScenarioType) => {
+    setSimulationScenario(1, scenario).catch(() => {});
+
+    set((state) => {
+      const def = scenarioDefinitions[scenario];
+      const newEvent: EngineEventLog = {
+        id: `evt-${Date.now()}`,
+        time: new Date().toTimeString().slice(0, 8),
+        type: 'SCENARIO_CHANGE',
+        title: `Scenario Injected: ${def.faultType}`,
+        detail: def.fusionSummary,
+        severity: def.severity,
+      };
+      return {
+        scenario,
+        ...def,
+        telemetry: buildInitialTelemetry(scenario),
+        inferenceLatency: 18 + Math.floor(Math.random() * 8),
+        eventLog: [newEvent, ...state.eventLog.slice(0, 24)],
+      };
+    });
+  },
 
   setMissionProfile: (missionProfile: MissionProfileType) => set((state) => {
     const profileLabels: Record<MissionProfileType, string> = {

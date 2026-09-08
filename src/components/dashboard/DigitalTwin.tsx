@@ -7,7 +7,7 @@ import { Eye, Radio } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const DigitalTwin: React.FC = () => {
-  const { affectedComponent, telemetry, inferenceLatency, missionProfile } = useEngineStore();
+  const { scenario, affectedComponent, telemetry, inferenceLatency, missionProfile } = useEngineStore();
   const { digitalTwin, backendConnected } = useBackendEngineState();
 
   const activeFaultComponent =
@@ -15,7 +15,10 @@ export const DigitalTwin: React.FC = () => {
       ? (digitalTwin.active_faults[0].affected_component as ComponentType)
       : null;
 
-  const effectiveAffectedComponent = activeFaultComponent || affectedComponent;
+  const effectiveAffectedComponent =
+    scenario !== 'HEALTHY'
+      ? affectedComponent
+      : (activeFaultComponent || affectedComponent);
 
   const [selectedSubAssembly, setSelectedSubAssembly] = useState<ComponentType>(
     effectiveAffectedComponent !== 'NONE' ? effectiveAffectedComponent : 'BEARING'
