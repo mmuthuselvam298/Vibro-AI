@@ -14,6 +14,7 @@ export const GuideLink: React.FC<GuideLinkProps> = ({ sectionId, label = '?', cl
     <Link
       to={`/system-guide#${sectionId}`}
       title={`Open System Guide: ${sectionId}`}
+      aria-label={`Open System Guide: ${label && label !== '?' ? label : sectionId.replace(/-/g, ' ')}`}
       className={cn(
         "inline-flex items-center justify-center gap-1 font-mono text-[11px] font-extrabold px-1.5 py-0.5 border-2 border-black bg-white hover:bg-[var(--color-brand-yellow)] text-black transition-all shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 shrink-0 cursor-pointer",
         className

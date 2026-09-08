@@ -76,6 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
         )}
         <button
           onClick={toggle}
+          aria-label={isOpen ? "Collapse navigation sidebar" : "Expand navigation sidebar"}
           className="p-2 border-2 border-transparent hover:border-black hover:bg-white hover:shadow-[var(--shadow-neobrutalism-sm)] transition-all mx-auto"
         >
           {isOpen ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}
@@ -87,7 +88,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
         {navGroups.map((group, gIdx) => (
           <div key={gIdx} className="px-2">
             {isOpen && (
-              <div className="text-[10px] font-mono font-bold text-gray-500 uppercase px-3 mb-1.5 tracking-wider">
+              <div className="text-[10px] font-mono font-bold text-neutral-700 uppercase px-3 mb-1.5 tracking-wider">
                 {group.groupName}
               </div>
             )}
@@ -135,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
       <div className="p-3 border-t-4 border-black text-xs font-mono bg-white">
         {isOpen ? (
           <div>
-            <div className="text-[10px] font-bold text-gray-500 uppercase">SIH26054 PROTOTYPE</div>
+            <div className="text-[10px] font-bold text-neutral-700 uppercase">SIH26054 PROTOTYPE</div>
             <div className="flex items-center gap-2 mt-1">
               <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-brand-green)] border border-black animate-pulse" />
               <span className="font-bold text-[11px]">MULTI-PARAMETER READY</span>

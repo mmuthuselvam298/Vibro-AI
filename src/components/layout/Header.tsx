@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, onOpenTour, onOpe
               SIH26054
             </span>
           </div>
-          <div className="text-[11px] font-mono text-gray-600 flex items-center gap-2 mt-0.5">
+          <div className="text-[11px] font-mono text-neutral-700 flex items-center gap-2 mt-0.5">
             <span className="font-bold text-black">UAV TESTBENCH</span>
             <span>|</span>
             <span className="hidden md:inline">ROTAX 912 PISTON</span>
@@ -131,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, onOpenTour, onOpe
 
         {/* Telemetry Cycle & Latency */}
         <div className="hidden sm:flex flex-col items-end font-mono text-[11px] leading-tight">
-          <div className="flex items-center gap-1 text-neutral-600">
+          <div className="flex items-center gap-1 text-neutral-700">
             <Clock size={11} />
             <span>Cycle #{operatingCycle.toLocaleString()}</span>
           </div>
@@ -157,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({ toggleSidebar, onOpenTour, onOpe
           </div>
         ) : (
           <div
-            className="hidden sm:flex items-center gap-1.5 px-2 py-1 border-2 border-neutral-400 bg-neutral-100 text-neutral-600 font-mono text-[10px] font-bold shadow-[1px_1px_0px_0px_#000]"
+            className="hidden sm:flex items-center gap-1.5 px-2 py-1 border-2 border-neutral-400 bg-neutral-100 text-neutral-700 font-mono text-[10px] font-bold shadow-[1px_1px_0px_0px_#000]"
             title="FastAPI unavailable • Using frontend simulation fallback"
           >
             <span className="w-2 h-2 rounded-full bg-neutral-400 shrink-0" />

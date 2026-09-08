@@ -65,13 +65,14 @@ export const WhatIfSimulatorModal: React.FC<WhatIfSimulatorModalProps> = ({ isOp
               <h2 className="text-xl sm:text-2xl font-extrabold uppercase tracking-tight">
                 Digital Twin &quot;What-If&quot; Physics Simulation
               </h2>
-              <p className="text-xs font-mono text-gray-500">
+              <p className="text-xs font-mono text-neutral-700">
                 PROJECTION ENGINE: First-principles simulation of operator intervention on RUL & mission reliability.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close What-If Simulator"
             className="p-1.5 border-2 border-black bg-gray-100 hover:bg-black hover:text-white transition-colors"
           >
             <X size={18} />
@@ -80,7 +81,7 @@ export const WhatIfSimulatorModal: React.FC<WhatIfSimulatorModalProps> = ({ isOp
 
         {/* Action Candidate Selection */}
         <div>
-          <span className="text-xs font-mono font-bold uppercase text-gray-500 block mb-2">
+          <span className="text-xs font-mono font-bold uppercase text-neutral-700 block mb-2">
             Select Operational Candidate Action:
           </span>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

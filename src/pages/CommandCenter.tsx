@@ -78,7 +78,7 @@ export const CommandCenter: React.FC = () => {
             <Sparkles size={14} className="text-yellow-500" />
             <span>WHAT-IF DIGITAL TWIN</span>
           </button>
-          <div className="text-[11px] font-mono text-gray-500 font-semibold hidden lg:block">
+          <div className="text-[11px] font-mono text-neutral-700 font-semibold hidden lg:block">
             SIH26054 AEROSPACE HEALTH & RELIABILITY TWIN
           </div>
         </div>

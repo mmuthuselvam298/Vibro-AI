@@ -16,9 +16,9 @@ export const AlertBanner: React.FC = () => {
             <div className="text-[10px] font-mono font-bold tracking-wider uppercase text-neutral-800">
               DECISION-SUPPORT STATUS: CURRENT ENGINE STATE
             </div>
-            <h3 className="font-extrabold text-xl sm:text-2xl uppercase tracking-tight text-black leading-none mt-0.5">
+            <h2 className="font-extrabold text-xl sm:text-2xl uppercase tracking-tight text-black leading-none mt-0.5">
               Nominal • Continue Monitoring
-            </h3>
+            </h2>
             <p className="font-mono text-xs font-semibold text-neutral-900 mt-1">
               All sensors within nominal bounds of adaptive baseline. Zero candidate defect signatures flagged.
             </p>
@@ -45,9 +45,9 @@ export const AlertBanner: React.FC = () => {
             <div className="text-[10px] font-mono font-bold tracking-wider uppercase text-neutral-800">
               DECISION-SUPPORT STATUS: ADVISORY WARNING
             </div>
-            <h3 className="font-extrabold text-xl sm:text-2xl uppercase tracking-tight text-black leading-none mt-0.5">
+            <h2 className="font-extrabold text-xl sm:text-2xl uppercase tracking-tight text-black leading-none mt-0.5">
               Warning • Candidate Degradation Detected
-            </h3>
+            </h2>
             <p className="font-mono text-xs font-semibold text-neutral-900 mt-1">
               {faultType} detected signature ({confidence.toFixed(1)}% agreement). Prototype RUL estimate ~{rul} cycles before maintenance threshold.
             </p>
@@ -73,9 +73,9 @@ export const AlertBanner: React.FC = () => {
           <div className="text-[10px] font-mono font-bold tracking-wider uppercase text-white/90">
             DECISION-SUPPORT STATUS: CRITICAL INDICATOR
           </div>
-          <h3 className="font-extrabold text-xl sm:text-2xl uppercase tracking-tight text-white leading-none mt-0.5">
+          <h2 className="font-extrabold text-xl sm:text-2xl uppercase tracking-tight text-white leading-none mt-0.5">
             CRITICAL • HIGH DEGRADATION DETECTED
-          </h3>
+          </h2>
           <p className="font-mono text-xs font-semibold text-white/95 mt-1">
             Elevated candidate signature: {faultType}. Prototype degradation estimate: ~{rul} cycles remaining before threshold.
           </p>

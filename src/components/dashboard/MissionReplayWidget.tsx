@@ -64,7 +64,7 @@ export const MissionReplayWidget: React.FC = () => {
               )}
             >
               <div className="text-xs uppercase leading-tight font-bold">{p.label}</div>
-              <div className={cn("text-[10px] line-clamp-1 mt-0.5", isActive ? "text-gray-300" : "text-gray-500")}>
+              <div className={cn("text-[10px] line-clamp-1 mt-0.5", isActive ? "text-gray-300" : "text-neutral-700")}>
                 {p.desc}
               </div>
             </button>
@@ -75,18 +75,21 @@ export const MissionReplayWidget: React.FC = () => {
       {/* Timeline Scrubber */}
       <div className="p-3 bg-white border-2 border-black mb-3">
         <div className="flex justify-between items-center text-xs font-mono font-bold mb-1">
-          <span>MISSION ELAPSED: {formatTime(missionTimeSeconds)}</span>
+          <label htmlFor="mission-timeline-scrubber">MISSION ELAPSED: {formatTime(missionTimeSeconds)}</label>
           <span>TOTAL DURATION: {formatTime(missionTotalDuration)}</span>
         </div>
         <input
+          id="mission-timeline-scrubber"
+          name="mission-timeline-scrubber"
           type="range"
+          aria-label="Mission elapsed timeline scrubber"
           min="0"
           max={missionTotalDuration}
           value={missionTimeSeconds}
           onChange={(e) => setMissionTimeSeconds(Number(e.target.value))}
           className="w-full h-3 bg-gray-200 border-2 border-black appearance-none cursor-pointer accent-black"
         />
-        <div className="flex justify-between text-[10px] font-mono text-gray-500 mt-1">
+        <div className="flex justify-between text-[10px] font-mono text-neutral-700 mt-1">
           <span>00:00 (Takeoff)</span>
           <span>{progressPct.toFixed(1)}% Completed</span>
           <span>120:00 (Landing)</span>
@@ -107,6 +110,7 @@ export const MissionReplayWidget: React.FC = () => {
             onClick={() => setMissionTimeSeconds(0)}
             className="px-2 py-1.5 border-2 border-black bg-white hover:bg-gray-100 font-bold text-xs flex items-center gap-1"
             title="Reset to 00:00"
+            aria-label="Reset mission timeline to 00:00"
           >
             <RotateCcw size={14} />
           </button>

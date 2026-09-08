@@ -40,7 +40,7 @@ export const JargonTooltip: React.FC<JargonTooltipProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsOpen(true)}
         className={cn(
-          "w-4 h-4 rounded-full border border-black bg-neutral-100 hover:bg-neutral-800 hover:text-white flex items-center justify-center text-[10px] font-bold font-mono transition-colors ml-1 shrink-0",
+          "w-6 h-6 min-w-[24px] min-h-[24px] rounded-full border border-black bg-neutral-100 hover:bg-neutral-800 hover:text-white flex items-center justify-center text-[11px] font-bold font-mono transition-colors ml-1 shrink-0",
           isOpen ? "bg-black text-white" : "text-neutral-700",
           className
         )}

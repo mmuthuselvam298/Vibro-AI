@@ -99,6 +99,7 @@ export const GuidedTourModal: React.FC<GuidedTourModalProps> = ({ isOpen, onClos
             onClick={onClose}
             className="p-1.5 border-2 border-black bg-neutral-100 hover:bg-black hover:text-white transition-colors"
             title="Close Tour"
+            aria-label="Close Tour"
           >
             <X size={18} />
           </button>
@@ -119,6 +120,7 @@ export const GuidedTourModal: React.FC<GuidedTourModalProps> = ({ isOpen, onClos
                   : "bg-neutral-200 hover:bg-neutral-300"
               )}
               title={`Go to step ${idx + 1}`}
+              aria-label={`Go to step ${idx + 1}`}
             />
           ))}
         </div>

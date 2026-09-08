@@ -92,6 +92,7 @@ export const EngineReportModal: React.FC<EngineReportModalProps> = ({ isOpen, on
             </button>
             <button
               onClick={onClose}
+              aria-label="Close Engine Report"
               className="p-1.5 border-2 border-black bg-neutral-100 hover:bg-black hover:text-white transition-colors"
             >
               <X size={18} />
