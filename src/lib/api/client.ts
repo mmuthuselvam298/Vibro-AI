@@ -17,18 +17,24 @@ import type {
 } from './types';
 
 /**
- * Default fallback backend URL for local development.
+ * Default fallback backend URL:
+ * - Local development (DEV): defaults to local FastAPI server 'http://127.0.0.1:8000'
+ * - Production (PROD): defaults to same-origin '' so all requests use relative '/api/...'
  */
-export const DEFAULT_API_BASE_URL = 'http://127.0.0.1:8000';
+export const DEFAULT_API_BASE_URL =
+  typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV
+    ? 'http://127.0.0.1:8000'
+    : '';
 
 /**
- * Resolved API base URL, sourced from Vite environment variables with a localhost fallback.
+ * Resolved API base URL, sourced from Vite environment variables with environment-aware fallback.
  */
 export const API_BASE_URL: string =
-  (typeof import.meta !== 'undefined' &&
-    import.meta.env &&
-    import.meta.env.VITE_API_BASE_URL) ||
-  DEFAULT_API_BASE_URL;
+  typeof import.meta !== 'undefined' &&
+  import.meta.env &&
+  typeof import.meta.env.VITE_API_BASE_URL === 'string'
+    ? import.meta.env.VITE_API_BASE_URL
+    : DEFAULT_API_BASE_URL;
 
 /**
  * Custom error class for API communication failures.

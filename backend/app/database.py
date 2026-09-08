@@ -4,7 +4,38 @@ from typing import Generator
 from sqlmodel import SQLModel, create_engine, Session
 from . import models  # noqa: F401 - ensures all SQLModel tables are registered in metadata
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./vibro_ai.db")
+def _resolve_database_url() -> str:
+    env_url = os.getenv("DATABASE_URL")
+    if env_url:
+        return env_url
+
+    backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    bundled_db = os.path.join(backend_dir, "vibro_ai.db")
+
+    if os.getenv("VERCEL"):
+        # On Vercel serverless, root filesystem is read-only.
+        # Use /tmp which is writable across the container execution.
+        tmp_db = "/tmp/vibro_ai.db"
+        if not os.path.exists(tmp_db) and os.path.exists(bundled_db):
+            try:
+                import shutil
+                shutil.copyfile(bundled_db, tmp_db)
+            except Exception:
+                pass
+        return f"sqlite:///{tmp_db}"
+
+    # Local development:
+    # If running from backend/ directory, use ./vibro_ai.db
+    if os.path.exists("./vibro_ai.db"):
+        return "sqlite:///./vibro_ai.db"
+    # If running from repository root, use backend/vibro_ai.db if present
+    if os.path.exists(bundled_db):
+        return f"sqlite:///{bundled_db}"
+
+    return "sqlite:///./vibro_ai.db"
+
+
+DATABASE_URL = _resolve_database_url()
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
