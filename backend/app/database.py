@@ -94,13 +94,84 @@ def _ensure_sqlite_column_compatibility():
         pass
 
 
-def create_db_and_tables():
-    """Create all registered database tables and ensure column compatibility."""
+def bootstrap_demo_dataset(target_engine=None):
+    """
+    Idempotently bootstrap the demo UAV and Engine records if the database has no engines.
+
+    Guarantees:
+    - Checks if any engine exists; if so, does nothing (preserves existing data).
+    - Ensures demo UAV 'UAV-001' exists for foreign key integrity.
+    - Creates primary demo Engine with id=1, uav_id='UAV-001', engine_model='MALE-Piston-Demo',
+      serial_number='ENG-001', health_score=100.0, status='NOMINAL'.
+    - Handles concurrent initializations safely and idempotently.
+    """
+    from sqlmodel import select
+    from .models.engine import Engine
+    from .models.uav import UAV
+
+    use_engine = target_engine or engine
+
+    try:
+        with Session(use_engine) as session:
+            # 1. If any engine already exists, preserve all existing records
+            existing_engine = session.exec(select(Engine)).first()
+            if existing_engine is not None:
+                return
+
+            # 2. Ensure parent UAV-001 exists for foreign key integrity
+            uav_id = "UAV-001"
+            existing_uav = session.get(UAV, uav_id)
+            if existing_uav is None:
+                demo_uav = UAV(
+                    id=uav_id,
+                    tail_number="UAV-001",
+                    model="MALE-UAV-Demo",
+                    status="MISSION_ACTIVE",
+                    total_flight_hours=0.0,
+                )
+                session.add(demo_uav)
+                session.commit()
+
+            # 3. Create primary demo Engine record with ID 1
+            demo_engine = Engine(
+                id=1,
+                uav_id=uav_id,
+                engine_model="MALE-Piston-Demo",
+                serial_number="ENG-001",
+                health_score=100.0,
+                status="NOMINAL",
+                total_runtime_hours=0.0,
+                total_operating_cycles=0,
+                is_simulated=True,
+            )
+            session.add(demo_engine)
+            session.commit()
+    except Exception:
+        # Avoid crashing startup if concurrent process or cold-start already inserted
+        pass
+
+
+_db_initialized = False
+
+
+def create_db_and_tables(target_engine=None):
+    """Create all registered database tables, ensure column compatibility, and bootstrap demo data."""
+    global _db_initialized
+    use_engine = target_engine or engine
     _ensure_sqlite_column_compatibility()
-    SQLModel.metadata.create_all(engine)
+    SQLModel.metadata.create_all(use_engine)
+    bootstrap_demo_dataset(use_engine)
+    _db_initialized = True
+
+
+def ensure_db_initialized():
+    """Ensure database tables and demo dataset are initialized on first access."""
+    if not _db_initialized:
+        create_db_and_tables()
 
 
 def get_session() -> Generator[Session, None, None]:
     """Reusable FastAPI dependency for database sessions."""
+    ensure_db_initialized()
     with Session(engine) as session:
         yield session
