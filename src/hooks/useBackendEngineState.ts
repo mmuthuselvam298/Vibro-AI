@@ -20,6 +20,9 @@ export interface UseBackendEngineStateOptions {
  * 4. Clean timer teardown on component unmount.
  * 5. Independent endpoint fault tolerance with graceful offline fallback.
  */
+let activeSubscribers = 0;
+let sharedInterval: ReturnType<typeof setInterval> | null = null;
+
 export function useBackendEngineState({
   engineId,
   refreshIntervalMs = DEFAULT_DIGITAL_TWIN_REFRESH_INTERVAL_MS,
@@ -29,23 +32,28 @@ export function useBackendEngineState({
 
   const activeId = engineId !== undefined ? engineId : store.selectedEngineId;
 
-  // Immediate initial fetch on mount or when engineId changes
+  // Coordinated background refresh across all component subscribers
   useEffect(() => {
     if (!enabled) return;
 
-    let isMounted = true;
+    activeSubscribers++;
 
+    // Initial fetch on mount or engine change
     store.fetchState(activeId);
 
-    const interval = setInterval(() => {
-      if (isMounted) {
-        store.fetchState(activeId);
-      }
-    }, Math.max(1000, refreshIntervalMs));
+    // Ensure exactly ONE shared interval is running
+    if (!sharedInterval) {
+      sharedInterval = setInterval(() => {
+        useBackendEngineStore.getState().fetchState();
+      }, Math.max(1000, refreshIntervalMs));
+    }
 
     return () => {
-      isMounted = false;
-      clearInterval(interval);
+      activeSubscribers = Math.max(0, activeSubscribers - 1);
+      if (activeSubscribers === 0 && sharedInterval) {
+        clearInterval(sharedInterval);
+        sharedInterval = null;
+      }
     };
   }, [enabled, activeId, refreshIntervalMs]);
 

@@ -74,53 +74,60 @@ export function useBackendWebSocket(enabled: boolean = true) {
               const tel = data.telemetry;
               const currentScenario = useEngineStore.getState().scenario;
 
-              // If the user selected an active demo scenario, do NOT let incoming default
-              // or stale frames forcibly reset the scenario back to HEALTHY!
-              if (currentScenario !== 'HEALTHY' && data.scenario && data.scenario !== currentScenario) {
+              // ARCHITECTURAL RULE:
+              // User-controlled state (scenario) must NEVER be overwritten by incoming server frames.
+              // If incoming frame has a scenario that doesn't match the user's selected scenario, discard it.
+              if (data.scenario && data.scenario !== currentScenario) {
                 return;
               }
 
-              // 1. Update authoritative engineStore
-              useEngineStore.setState((prev) => ({
-                scenario: prev.scenario !== 'HEALTHY' ? prev.scenario : ((data.scenario as ScenarioType) || prev.scenario),
-                engineHealth: diag.health_score,
-                faultType: diag.raw_fault_code,
-                severity: diag.severity as any,
-                confidence: Math.round(diag.confidence * 100),
-                rul: diag.rul_cycles,
-                degradationRate: diag.degradation_rate_per_100_cycles,
-                affectedComponent: diag.affected_component as any,
-                alertStatus:
-                  diag.severity === 'NOMINAL'
+              // Update authoritative engineStore without ever mutating the canonical scenario
+              useEngineStore.setState((prev) => {
+                const isCustomScenario = prev.scenario !== 'HEALTHY';
+                return {
+                  // Scenario is strictly user-controlled; NEVER overwritten by server frames
+                  scenario: prev.scenario,
+                  engineHealth: isCustomScenario ? prev.engineHealth : diag.health_score,
+                  faultType: isCustomScenario ? prev.faultType : diag.raw_fault_code,
+                  severity: isCustomScenario ? prev.severity : (diag.severity as any),
+                  confidence: isCustomScenario ? prev.confidence : Math.round(diag.confidence * 100),
+                  rul: isCustomScenario ? prev.rul : diag.rul_cycles,
+                  degradationRate: isCustomScenario ? prev.degradationRate : diag.degradation_rate_per_100_cycles,
+                  affectedComponent: isCustomScenario ? prev.affectedComponent : (diag.affected_component as any),
+                  alertStatus: isCustomScenario
+                    ? prev.alertStatus
+                    : diag.severity === 'NOMINAL'
                     ? 'NOMINAL'
                     : diag.severity === 'HIGH' || diag.severity === 'CRITICAL'
                     ? 'CRITICAL'
                     : 'WARNING',
-                fusionSummary:
-                  diag.evidence.primary.length > 0
+                  fusionSummary: isCustomScenario
+                    ? prev.fusionSummary
+                    : diag.evidence.primary.length > 0
                     ? `${diag.candidate_fault}: ${diag.evidence.primary[0]}`
                     : diag.candidate_fault,
-                maintenanceAction: diag.recommended_action,
-                telemetry: {
-                  rpm: { ...prev.telemetry.rpm, current: tel.rpm, expected: tel.expected_rpm },
-                  cht: { ...prev.telemetry.cht, current: tel.cht, expected: tel.expected_cht },
-                  egt: { ...prev.telemetry.egt, current: tel.egt, expected: tel.expected_egt },
-                  oilPressure: {
-                    ...prev.telemetry.oilPressure,
-                    current: tel.oil_pressure,
-                    expected: tel.expected_oil_pressure,
+                  maintenanceAction: isCustomScenario ? prev.maintenanceAction : diag.recommended_action,
+                  telemetry: {
+                    rpm: { ...prev.telemetry.rpm, current: tel.rpm, expected: tel.expected_rpm },
+                    cht: { ...prev.telemetry.cht, current: tel.cht, expected: tel.expected_cht },
+                    egt: { ...prev.telemetry.egt, current: tel.egt, expected: tel.expected_egt },
+                    oilPressure: {
+                      ...prev.telemetry.oilPressure,
+                      current: tel.oil_pressure,
+                      expected: tel.expected_oil_pressure,
+                    },
+                    oilTemp: { ...prev.telemetry.oilTemp, current: tel.oil_temp, expected: tel.expected_oil_temp },
+                    fuelFlow: { ...prev.telemetry.fuelFlow, current: tel.fuel_flow, expected: tel.expected_fuel_flow },
+                    vibrationRms: {
+                      ...prev.telemetry.vibrationRms,
+                      current: tel.vibration_rms,
+                      expected: tel.expected_vibration_rms,
+                    },
+                    batteryVoltage: { ...prev.telemetry.batteryVoltage, current: tel.battery_voltage },
+                    injectionTiming: { ...prev.telemetry.injectionTiming, current: tel.injection_timing },
                   },
-                  oilTemp: { ...prev.telemetry.oilTemp, current: tel.oil_temp, expected: tel.expected_oil_temp },
-                  fuelFlow: { ...prev.telemetry.fuelFlow, current: tel.fuel_flow, expected: tel.expected_fuel_flow },
-                  vibrationRms: {
-                    ...prev.telemetry.vibrationRms,
-                    current: tel.vibration_rms,
-                    expected: tel.expected_vibration_rms,
-                  },
-                  batteryVoltage: { ...prev.telemetry.batteryVoltage, current: tel.battery_voltage },
-                  injectionTiming: { ...prev.telemetry.injectionTiming, current: tel.injection_timing },
-                },
-              }));
+                };
+              });
 
               // 2. Update authoritative signalStore waveform & DSP features
               if (data.vibration && Array.isArray(data.vibration.samples)) {

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 
 export const MaintenanceAdvisoryPanel: React.FC = () => {
   const {
+    scenario,
     faultType: simFaultType,
     severity: simSeverity,
     confidence: simConfidence,
@@ -92,25 +93,37 @@ export const MaintenanceAdvisoryPanel: React.FC = () => {
 
   const badge = getUrgencyBadge();
 
+  const isDemoFaultActive = scenario !== 'HEALTHY';
+
   // Metrics
-  const effectiveRul = prognostics?.rul_nominal_cycles ?? digitalTwin?.prognostics?.rul_nominal_cycles ?? simRul;
-  const effectiveConfidence = activeAdvisory
-    ? (digitalTwin?.overall_health_score ?? simConfidence)
-    : simConfidence;
-  const effectiveSeverity = isBackendActive
-    ? (activeAdvisory?.urgency === 'IMMEDIATE_REVIEW' ? 'HIGH' : activeAdvisory?.urgency === 'PRIORITY_REVIEW' ? 'MEDIUM' : 'LOW')
-    : simSeverity;
+  const effectiveRul = isDemoFaultActive
+    ? simRul
+    : (prognostics?.rul_nominal_cycles ?? digitalTwin?.prognostics?.rul_nominal_cycles ?? simRul);
+  const effectiveConfidence = isDemoFaultActive
+    ? simConfidence
+    : activeAdvisory
+      ? (digitalTwin?.overall_health_score ?? simConfidence)
+      : simConfidence;
+  const effectiveSeverity = isDemoFaultActive
+    ? simSeverity
+    : isBackendActive
+      ? (activeAdvisory?.urgency === 'IMMEDIATE_REVIEW' ? 'HIGH' : activeAdvisory?.urgency === 'PRIORITY_REVIEW' ? 'MEDIUM' : 'LOW')
+      : simSeverity;
 
-  const effectiveAction = isBackendActive
-    ? activeAdvisory?.prescribed_action
-    : simMaintenanceAction;
+  const effectiveAction = isDemoFaultActive
+    ? simMaintenanceAction
+    : isBackendActive
+      ? (activeAdvisory?.prescribed_action || simMaintenanceAction)
+      : simMaintenanceAction;
 
-  const effectiveEvidence = isBackendActive
-    ? [
-        ...(activeAdvisory?.evidence_summary ? [activeAdvisory.evidence_summary] : []),
-        ...(digitalTwin?.evidence ?? [])
-      ]
-    : simEvidencePoints;
+  const effectiveEvidence = isDemoFaultActive
+    ? simEvidencePoints
+    : isBackendActive
+      ? [
+          ...(activeAdvisory?.evidence_summary ? [activeAdvisory.evidence_summary] : []),
+          ...(digitalTwin?.evidence ?? [])
+        ]
+      : simEvidencePoints;
 
   return (
     <div className="neo-card flex flex-col h-full bg-white">

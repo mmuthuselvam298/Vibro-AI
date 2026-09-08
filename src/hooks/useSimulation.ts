@@ -3,8 +3,10 @@ import { useEngineStore } from '../store/engineStore';
 import { useSignalStore } from '../store/signalStore';
 
 export function useSimulation() {
-  const { scenario, isSimulating, tick } = useEngineStore();
-  const { generateSignal } = useSignalStore();
+  const scenario = useEngineStore((s) => s.scenario);
+  const isSimulating = useEngineStore((s) => s.isSimulating);
+  const tick = useEngineStore((s) => s.tick);
+  const generateSignal = useSignalStore((s) => s.generateSignal);
 
   const timeRef = useRef(0);
   const requestRef = useRef<number | null>(null);

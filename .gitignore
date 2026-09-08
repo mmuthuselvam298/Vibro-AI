@@ -24,5 +24,9 @@ dist-ssr
 *.sw?
 .vercel
 .env*
-!.env.example
 *.db
+.venv
+backend/.venv
+__pycache__
+*.pyc
+.pytest_cache
